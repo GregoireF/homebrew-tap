@@ -5,21 +5,21 @@
 class Addlicense < Formula
   desc "Fast, minimal license header manager for monorepos and CI pipelines."
   homepage "https://github.com/GregoireF/addlicense"
-  version "0.1.0"
+  version "0.2.0"
   license "MIT"
 
   on_macos do
     if Hardware::CPU.intel?
-      url "https://github.com/GregoireF/addlicense/releases/download/v0.1.0/addlicense_darwin_amd64.tar.gz"
-      sha256 "95685eedaf39dce85aa839bbd66c80145e98f7857aa258a4f5f29a5ab595a3a5"
+      url "https://github.com/GregoireF/addlicense/releases/download/v0.2.0/addlicense_darwin_amd64.tar.gz"
+      sha256 "d0b01edafe0ea5c4f82df69e79635e407a90cd419323783cb335df0b24b00008"
 
       define_method(:install) do
         bin.install "addlicense"
       end
     end
     if Hardware::CPU.arm?
-      url "https://github.com/GregoireF/addlicense/releases/download/v0.1.0/addlicense_darwin_arm64.tar.gz"
-      sha256 "a442e3e12faa1e154b262074f41f25f59d35823fe7e9eda2959739b247eea343"
+      url "https://github.com/GregoireF/addlicense/releases/download/v0.2.0/addlicense_darwin_arm64.tar.gz"
+      sha256 "b4f336184a524a5364403a5150a6f7eb2345cacc28766ea591887dd58abdae6b"
 
       define_method(:install) do
         bin.install "addlicense"
@@ -29,15 +29,15 @@ class Addlicense < Formula
 
   on_linux do
     if Hardware::CPU.intel? && Hardware::CPU.is_64_bit?
-      url "https://github.com/GregoireF/addlicense/releases/download/v0.1.0/addlicense_linux_amd64.tar.gz"
-      sha256 "44e0405d47d50281e6269b0fd91ac981a626000aedfb0311daf2807200e2cfe3"
+      url "https://github.com/GregoireF/addlicense/releases/download/v0.2.0/addlicense_linux_amd64.tar.gz"
+      sha256 "e468218f69b984f478f7f2775d3f830e8d14233479c654a15f6b4d34fb14e949"
       define_method(:install) do
         bin.install "addlicense"
       end
     end
     if Hardware::CPU.arm? && Hardware::CPU.is_64_bit?
-      url "https://github.com/GregoireF/addlicense/releases/download/v0.1.0/addlicense_linux_arm64.tar.gz"
-      sha256 "cd566812f0c1fa72dc694e64895c614d63477a4a984be7b314a40eaf0504c5cf"
+      url "https://github.com/GregoireF/addlicense/releases/download/v0.2.0/addlicense_linux_arm64.tar.gz"
+      sha256 "d88daaed1cd21f94451574aa16402aa1b370b7987e3ee4d3f14f77f573169bbe"
       define_method(:install) do
         bin.install "addlicense"
       end
