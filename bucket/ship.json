@@ -1,0 +1,22 @@
+{
+    "version": "0.1.0",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/GregoireF/ship-it/releases/download/v0.1.0/ship_0.1.0_windows_amd64.zip",
+            "bin": [
+                "ship.exe"
+            ],
+            "hash": "49d977f9058ee96d018c069c1d05be878b0fa1ce5df2a23d3ee0a5272e9159ea"
+        },
+        "arm64": {
+            "url": "https://github.com/GregoireF/ship-it/releases/download/v0.1.0/ship_0.1.0_windows_arm64.zip",
+            "bin": [
+                "ship.exe"
+            ],
+            "hash": "46336ed7df823efba3a4191f1bd641af81175aa56c3b7ff21503b2183e9e2bc1"
+        }
+    },
+    "homepage": "https://github.com/GregoireF/ship-it",
+    "license": "Apache-2.0",
+    "description": "You write the code, ship handles git and GitHub"
+}
