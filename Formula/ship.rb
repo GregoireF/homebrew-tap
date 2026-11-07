@@ -6,28 +6,28 @@
 class Ship < Formula
   desc "You write the code, ship handles git and GitHub"
   homepage "https://github.com/GregoireF/ship-it"
-  version "0.1.0"
+  version "0.1.1"
   license "Apache-2.0"
 
   on_macos do
     on_intel do
-      url "https://github.com/GregoireF/ship-it/releases/download/v0.1.0/ship_0.1.0_darwin_amd64.tar.gz"
-      sha256 "8500cfe34945a971157ecb64bb1888f34959bd0c0c473bb47d32321e7be3d099"
+      url "https://github.com/GregoireF/ship-it/releases/download/v0.1.1/ship_0.1.1_darwin_amd64.tar.gz"
+      sha256 "d65e4d168d5bb25ccbaf3bd0b2463e5d39c1867bc94e4dd8cc977deec2a2ff7d"
     end
     on_arm do
-      url "https://github.com/GregoireF/ship-it/releases/download/v0.1.0/ship_0.1.0_darwin_arm64.tar.gz"
-      sha256 "a3ca6b670ee12fb4246951480632478aa1fdb3e9706d2b6ee151332206021127"
+      url "https://github.com/GregoireF/ship-it/releases/download/v0.1.1/ship_0.1.1_darwin_arm64.tar.gz"
+      sha256 "aa05e829ac6d1de1c368bb73ecfe90c787f921ffd7a8b8026e480e1e3403e470"
     end
   end
 
   on_linux do
     on_intel do
-      url "https://github.com/GregoireF/ship-it/releases/download/v0.1.0/ship_0.1.0_linux_amd64.tar.gz"
-      sha256 "fe4de00d92a73e1664001a3eb90982dd6a28e5a76c7b20777382d936d128653f"
+      url "https://github.com/GregoireF/ship-it/releases/download/v0.1.1/ship_0.1.1_linux_amd64.tar.gz"
+      sha256 "c43ebb48de1ec53b8deff23bee328c796d9bf289e53ffe9baed883443744536c"
     end
     on_arm do
-      url "https://github.com/GregoireF/ship-it/releases/download/v0.1.0/ship_0.1.0_linux_arm64.tar.gz"
-      sha256 "41802ab4487a49b6aa1b0679c98c52026cc3e03f31ac98f5b5b6cf91e244dddb"
+      url "https://github.com/GregoireF/ship-it/releases/download/v0.1.1/ship_0.1.1_linux_arm64.tar.gz"
+      sha256 "f1c8743b65591a3603bd6fb572f8718dc5ebd7f858ab2109832c87eb87bb6fb6"
     end
   end
 
