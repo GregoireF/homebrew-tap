@@ -1,19 +1,19 @@
 {
-    "version": "0.1.1",
+    "version": "0.1.2",
     "architecture": {
         "64bit": {
-            "url": "https://github.com/GregoireF/ship-it/releases/download/v0.1.1/ship_0.1.1_windows_amd64.zip",
+            "url": "https://github.com/GregoireF/ship-it/releases/download/v0.1.2/ship_0.1.2_windows_amd64.zip",
             "bin": [
                 "ship.exe"
             ],
-            "hash": "4eddf31bc670540f4c730bdefbab98fde20baf000d56751372cc64b7b148ac0f"
+            "hash": "d15b8a4e095f59c1dec237123f9ab459389a9e9a0841172dbe3ff6d46bd1292d"
         },
         "arm64": {
-            "url": "https://github.com/GregoireF/ship-it/releases/download/v0.1.1/ship_0.1.1_windows_arm64.zip",
+            "url": "https://github.com/GregoireF/ship-it/releases/download/v0.1.2/ship_0.1.2_windows_arm64.zip",
             "bin": [
                 "ship.exe"
             ],
-            "hash": "2324b2e643e9514b4ca441762e2351eab612378eff2ffe1d24af5a089a6cc4ac"
+            "hash": "6d44c02092124cdecd3d407a8e20f0ce9333c8a82bd43e0757331e6d42c4614e"
         }
     },
     "homepage": "https://github.com/GregoireF/ship-it",
