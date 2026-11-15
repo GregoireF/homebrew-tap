@@ -1,0 +1,41 @@
+# typed: false
+# frozen_string_literal: true
+
+# Written by the release workflow of GregoireF/kiwa (.github/workflows/publish-tap.yml);
+# do not edit by hand, the next release replaces it.
+class Kiwa < Formula
+  desc "Find any project, run any task: workspace launcher for humans and AI agents"
+  homepage "https://github.com/GregoireF/kiwa"
+  version "0.1.0"
+  license any_of: ["MIT", "Apache-2.0"]
+
+  on_macos do
+    on_intel do
+      url "https://github.com/GregoireF/kiwa/releases/download/v0.1.0/kiwa-x86_64-apple-darwin.tar.xz"
+      sha256 "a9bb1f1acce55b62d35898f48c08a4da27affc6af224045cba3fd4f28fea4c30"
+    end
+    on_arm do
+      url "https://github.com/GregoireF/kiwa/releases/download/v0.1.0/kiwa-aarch64-apple-darwin.tar.xz"
+      sha256 "d807b4805c641928217f30458464a3c709f928d8132010e349f192a0d7506de7"
+    end
+  end
+
+  on_linux do
+    on_intel do
+      url "https://github.com/GregoireF/kiwa/releases/download/v0.1.0/kiwa-x86_64-unknown-linux-gnu.tar.xz"
+      sha256 "6a30221a00308ffe78372a2f761f64b9c8d14bc5ea611ca792fff1f486553e7c"
+    end
+    on_arm do
+      url "https://github.com/GregoireF/kiwa/releases/download/v0.1.0/kiwa-aarch64-unknown-linux-gnu.tar.xz"
+      sha256 "bacb0ec4cc6eaea294f4d821504083cf38758cbbee7ef1c3132b0e57c1aaa98e"
+    end
+  end
+
+  def install
+    bin.install "kiwa", "kw"
+  end
+
+  test do
+    system "#{bin}/kiwa", "--version"
+  end
+end
