@@ -1,0 +1,36 @@
+<h1><%= h tool.name %> <span class="meta"><%= h release.version %></span></h1>
+<p class="lead"><%= h tool.desc %></p>
+<p class="meta">
+<a href="<%= h tool.homepage %>">Source</a> ·
+<a href="<%= h tool.homepage %>/releases/tag/<%= h release.tag %>">Release notes</a> ·
+<%= h tool.license %><%= release.published ? " · published #{h release.published[0, 10]}" : "" %>
+</p>
+
+<h2>Homebrew (macOS, Linux)</h2>
+<pre>brew install gregoiref/tap/<%= h tool.name %></pre>
+
+<h2>Scoop (Windows)</h2>
+<pre>scoop bucket add gregoiref https://github.com/GregoireF/homebrew-tap
+scoop install gregoiref/<%= h tool.name %></pre>
+<% if tool.winget -%>
+
+<h2>WinGet (Windows)</h2>
+<pre>winget install --id <%= h tool.winget %> --exact</pre>
+<p class="meta">Available once microsoft/winget-pkgs has merged the version's pull request.</p>
+<% end -%>
+
+<h2>Check that it works</h2>
+<pre><%= h tool.binaries.first %> <%= h tool.test.join(" ") %></pre>
+<% if tool.caveats -%>
+<p><%= h tool.caveats %></p>
+<% end -%>
+
+<h2>Verify a download yourself</h2>
+<% if release.verified == "attestation" -%>
+<p>Every archive carries a SLSA build provenance signed by a workflow of <code><%= h tool.repo %></code>:</p>
+<pre>gh release download <%= h release.tag %> --repo <%= h tool.repo %> --pattern <%= h release.assets["linux_amd64"]["name"] %>
+gh attestation verify <%= h release.assets["linux_amd64"]["name"] %> --repo <%= h tool.repo %></pre>
+<% else -%>
+<p>This tool does not publish a build provenance yet; the tap checks each archive against the release's <code><%= h tool.checksums %></code>:</p>
+<pre>sha256sum --ignore-missing -c <%= h tool.checksums %></pre>
+<% end -%>

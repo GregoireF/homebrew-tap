@@ -1,0 +1,17 @@
+<h1>Command-line tools, one tap</h1>
+<p class="lead">Homebrew (macOS, Linux), Scoop and WinGet (Windows) packages for the tools of
+<a href="https://github.com/GregoireF">GregoireF</a>.</p>
+
+<pre>brew tap gregoiref/tap
+scoop bucket add gregoiref https://github.com/GregoireF/homebrew-tap</pre>
+
+<ul class="tools">
+<% served.each do |tool, release| -%>
+<li>
+<a class="name" href="<%= h tool.name %>/"><%= h tool.name %></a>
+<span class="badge<%= release.verified == "attestation" ? "" : " checksum" %>"><%= release.verified == "attestation" ? "SLSA provenance" : "SHA-256" %></span>
+<div><%= h tool.desc %></div>
+<div class="meta"><%= h release.version %><%= release.published ? " · #{h release.published[0, 10]}" : "" %> · <%= h tool.license %></div>
+</li>
+<% end -%>
+</ul>

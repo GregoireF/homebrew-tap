@@ -1,0 +1,85 @@
+# yaml-language-server: $schema=schema/tools.schema.json
+# SPDX-License-Identifier: MIT OR Apache-2.0
+#
+# Source of truth of the tap: one entry per tool. `bin/tap sync` reads the
+# latest stable GitHub release of each `repo`, checks its archives, records
+# them in tools.lock.json, and `bin/tap render` writes Formula/, bucket/,
+# winget/ and the README from this file and the lock. `bin/tap add <repo>`
+# writes a new entry from a release. See docs/adding-a-tool.md.
+#
+# Keys
+#   repo         GitHub repository that publishes the releases.
+#   desc         Homebrew description: at most 80 characters, no final period,
+#                does not start with the tool's name or an article.
+#   license      SPDX expression.
+#   binaries     Executables inside the archives (without .exe).
+#   test         Arguments that make the first binary print its version.
+#   verify       `attestation`: every archive needs a SLSA provenance signed
+#                by a workflow of `repo` (gh attestation verify).
+#                `checksum`: SHA-256 from the checksums file only.
+#   checksums    Checksums file attached to each release (sha256sum format).
+#   assets       Archive name per platform; {version} is the version without v.
+#   caveats      Optional text that Homebrew and Scoop print after the install.
+#   completions  Optional arguments that make the first binary print a shell
+#                completion script; the shell's name is appended (bash, zsh, fish).
+#   winget       Optional WinGet package identifier: manifests are generated
+#                in winget/ and submitted to microsoft/winget-pkgs.
+
+publisher: Grégoire Favreau
+
+tools:
+  addlicense:
+    repo: GregoireF/addlicense
+    desc: Fast, minimal license header manager for monorepos and CI pipelines
+    license: MIT
+    binaries: [addlicense]
+    test: [--version]
+    # TODO(phase 2): attestation, once addlicense's release workflow signs
+    # its build provenance (GregoireF/addlicense#60).
+    verify: checksum
+    checksums: checksums.txt
+    completions: [completion]
+    winget: GregoireF.addlicense
+    assets:
+      darwin_amd64: addlicense_darwin_amd64.tar.gz
+      darwin_arm64: addlicense_darwin_arm64.tar.gz
+      linux_amd64: addlicense_linux_amd64.tar.gz
+      linux_arm64: addlicense_linux_arm64.tar.gz
+      windows_amd64: addlicense_windows_amd64.zip
+      windows_arm64: addlicense_windows_arm64.zip
+
+  kiwa:
+    repo: GregoireF/kiwa
+    desc: "Find any project, run any task: workspace launcher for humans and AI agents"
+    license: MIT OR Apache-2.0
+    binaries: [kiwa, kw]
+    test: [--version]
+    verify: attestation
+    checksums: sha256.sum
+    completions: [completions]
+    winget: GregoireF.kiwa
+    assets:
+      darwin_amd64: kiwa-x86_64-apple-darwin.tar.xz
+      darwin_arm64: kiwa-aarch64-apple-darwin.tar.xz
+      linux_amd64: kiwa-x86_64-unknown-linux-gnu.tar.xz
+      linux_arm64: kiwa-aarch64-unknown-linux-gnu.tar.xz
+      windows_amd64: kiwa-x86_64-pc-windows-msvc.zip
+      windows_arm64: kiwa-aarch64-pc-windows-msvc.zip
+
+  ship:
+    repo: GregoireF/ship-it
+    desc: You write the code, ship handles git and GitHub
+    license: Apache-2.0
+    binaries: [ship]
+    test: [version]
+    verify: attestation
+    checksums: checksums.txt
+    caveats: ship needs git 2.43 or later. Run `ship doctor` to check your setup.
+    winget: GregoireF.ship
+    assets:
+      darwin_amd64: ship_{version}_darwin_amd64.tar.gz
+      darwin_arm64: ship_{version}_darwin_arm64.tar.gz
+      linux_amd64: ship_{version}_linux_amd64.tar.gz
+      linux_arm64: ship_{version}_linux_arm64.tar.gz
+      windows_amd64: ship_{version}_windows_amd64.zip
+      windows_arm64: ship_{version}_windows_arm64.zip

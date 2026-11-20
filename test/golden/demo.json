@@ -1,0 +1,25 @@
+{
+  "version": "1.2.3",
+  "description": "Demonstrates the tap",
+  "homepage": "https://github.com/GregoireF/demo",
+  "license": "MIT",
+  "architecture": {
+    "64bit": {
+      "url": "https://github.com/GregoireF/demo/releases/download/v1.2.3/demo_1.2.3_windows_amd64.zip",
+      "hash": "1b70c6fab84ba1badc5c1f35184fd4e8b0941815fe0fce62752d2d120f28d976",
+      "bin": [
+        "demo.exe",
+        "dm.exe"
+      ]
+    },
+    "arm64": {
+      "url": "https://github.com/GregoireF/demo/releases/download/v1.2.3/demo_1.2.3_windows_arm64.zip",
+      "hash": "4bc0c916463793eecfae133411e6d392e3244ad9e419f814e1d9a1eb41660234",
+      "bin": [
+        "demo.exe",
+        "dm.exe"
+      ]
+    }
+  },
+  "notes": "Needs git 2.43. Run `demo doctor`."
+}

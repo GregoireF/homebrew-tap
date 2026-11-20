@@ -1,0 +1,3 @@
+# LF everywhere: bin/tap check compares bytes, and Homebrew rejects CRLF.
+* text=auto eol=lf
+*.png binary

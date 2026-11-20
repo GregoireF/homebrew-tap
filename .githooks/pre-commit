@@ -1,0 +1,14 @@
+#!/bin/sh
+# SPDX-License-Identifier: MIT OR Apache-2.0
+#
+# Before each commit: the tests, the coverage floor and bin/tap check, so CI
+# never finds what this machine could have. Enable once per clone:
+#   git config core.hooksPath .githooks
+# Skip once with `git commit --no-verify` (CI still checks everything).
+set -eu
+cd "$(git rev-parse --show-toplevel)"
+if ! command -v ruby >/dev/null 2>&1; then
+  echo "pre-commit: ruby not found, skipping the checks (CI runs them)" >&2
+  exit 0
+fi
+exec ruby -S rake
