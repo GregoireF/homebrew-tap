@@ -53,12 +53,13 @@ commits, and its README listed one tool out of three.
 - [x] Generated README table; AGENTS.md; LICENSE-MIT and LICENSE-APACHE;
       SECURITY.md; ARCHITECTURE.md; issue template.
 
-## Phase 2: hands-off publishing
+## Phase 2: hands-off publishing ✅
 
 Verified on GitHub on 2026-11-20: `sync.yml` detects and verifies all three
 tools; `install-test.yml` installs and tests them on the 6 runners, `winget
 validate` passes on windows-2025, the health report is clean; the catalog
-is live. Publishing waits for `TAP_SIGNING_KEY`.
+is live; `main` requires signed commits. The first automated publication
+happens with the next stable release of a tool.
 
 - [x] `sync.yml` (every 30 minutes, plus `workflow_dispatch`): detect and
       verify → install tests on the generated files → one signed commit
@@ -69,17 +70,18 @@ is live. Publishing waits for `TAP_SIGNING_KEY`.
       on Windows x64 and arm64. Nightly failures open a single issue.
 - [x] Dependabot, monthly and grouped, with a 7-day cooldown; merged by CI.
 - [x] OpenSSF Scorecard.
-- [ ] Producers stop pushing (pull requests open: GregoireF/ship-it#179,
-      GregoireF/kiwa#58, GregoireF/addlicense#60); then drop the
-      `HOMEBREW_TAP_*` secrets and deploy keys.
-- [ ] addlicense signs its build provenance (GregoireF/addlicense#60); the
-      nightly health report then asks to raise it to `verify: attestation`.
-- [ ] iac (GregoireF/iac#52): environment `publish` (protected branches) with
-      `TAP_SIGNING_KEY`, a ruleset (signed commits, no force push, no
-      deletion, no bypass), issues on. By hand: the CI signing key on the
-      account (`gh ssh-key add --type signing`), private vulnerability
-      reporting, Pages source "GitHub Actions", environment `winget` with
-      `WINGET_TOKEN`.
+- [x] Producers stop pushing (GregoireF/ship-it#179, GregoireF/kiwa#58,
+      GregoireF/addlicense#60 merged); `HOMEBREW_TAP_*` secrets and the tap's
+      deploy keys deleted.
+- [ ] addlicense's next release carries its build provenance; the nightly
+      health report then asks to raise it to `verify: attestation`.
+- [x] iac (GregoireF/iac#53): environment `publish` with `TAP_SIGNING_KEY`,
+      ruleset `main-integrity` (signed commits, no force push, no deletion,
+      no bypass), issues on. CI signing key on the account, private
+      vulnerability reporting, Pages, environment `winget` with `WINGET_TOKEN`.
+- [ ] Revoke the old `HOMEBREW_TAP_TOKEN` personal access token (by hand).
+- [ ] iac's repository module: manage `homepage_url` (the profile's homepage
+      is dropped by each apply until then).
 
 ## Phase 3: distribution hub ✅ (code ready, waits for the secrets)
 
