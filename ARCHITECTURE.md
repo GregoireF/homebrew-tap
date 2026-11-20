@@ -33,25 +33,22 @@
 
 ## The generator (`lib/tap/`)
 
-| File | Does |
-| --- | --- |
-| `config.rb` | Loads and validates `tools.yml` (including `brew audit`'s desc rules) |
-| `lock.rb` | Reads and writes `tools.lock.json` |
-| `github.rb` | Latest release, repository metadata, attestation lookup, downloads, topic search; the token goes to the API host only |
-| `checksums.rb` | Parses sha256sum files (GoReleaser and cargo-dist formats) |
-| `verifier.rb` | `gh attestation verify` |
-| `sync.rb` | Download, hash, cross-check, verify, refuse downgrades |
-| `render.rb` | Lock → formulae, Scoop manifests, README table |
-| `winget.rb` | Lock → WinGet manifests (1.10.0, portable zip) in winget-pkgs' layout |
-| `onboard.rb` | A `tools.yml` entry inferred from a release (`bin/tap add`, `discover --add`) |
-| `health.rb` | Stale tools, lost provenance, checksum-only tools that could be verified |
-| `site.rb` | The catalog: index, one page per tool, Atom feed |
-| `commit_lint.rb` | ship-it's header rules, for the `commit-msg` hook |
-| `cli.rb` | `bin/tap sync | render | check | add | discover | health | site | lint-commit` |
+Three layers, each depending only on the one above it:
 
-`render` is pure, so `bin/tap check` (run by `rake` and CI) fails as soon as a
-generated file differs from what the generator writes, or a stray one (an
-old WinGet version) is left: nobody can hand-edit a formula by mistake.
+| Layer | Files | Does |
+| --- | --- | --- |
+| Model | `config.rb`, `lock.rb`, `catalog.rb` | `tools.yml` (validated, including `brew audit`'s desc rules), `tools.lock.json`, and the `Catalog` every target renders from |
+| Releases | `github.rb`, `checksums.rb`, `verifier.rb`, `sync.rb`, `onboard.rb`, `health.rb` | GitHub API (the token goes to the API host only), sha256sum files, `gh attestation verify`; download, hash, cross-check, verify, refuse downgrades; entries inferred from a release; nightly checks |
+| Targets | `targets.rb`, `targets/*.rb` | One module per output, all with `files(catalog)` and `GLOBS`: `Homebrew`, `Scoop`, `Winget`, `Readme` (committed), `Pages` (site only) |
+| Commands | `workspace.rb`, `commands.rb`, `commands/*.rb`, `cli.rb` | One class per `bin/tap` command, sharing a `Workspace` (files in binary mode, GitHub, `$GITHUB_OUTPUT`) |
+
+Adding a package manager is one file under `targets/` and one name in
+`Targets.repository` or `Targets.site`.
+
+Targets are pure, so `bin/tap check` (run by `rake` and CI) fails as soon as
+a generated file differs from what the generator writes, or a stray one (an
+old WinGet version) is left under a target's `GLOBS`: nobody can hand-edit a
+formula by mistake.
 
 ## Workflows
 

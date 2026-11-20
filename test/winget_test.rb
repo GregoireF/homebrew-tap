@@ -18,19 +18,19 @@ class WingetTest < Minitest::Test
   end
 
   def test_files_follow_the_winget_pkgs_layout
-    files = Tap::Winget.files(winget_tool, published_release)
+    files = Tap::Targets::Winget.release_files(winget_tool, published_release)
     dir = "winget/manifests/g/GregoireF/demo/1.2.3"
     assert_equal ["#{dir}/GregoireF.demo.yaml", "#{dir}/GregoireF.demo.installer.yaml",
                   "#{dir}/GregoireF.demo.locale.en-US.yaml"], files.keys
   end
 
   def test_golden
-    files = Tap::Winget.files(winget_tool, published_release).values
+    files = Tap::Targets::Winget.release_files(winget_tool, published_release).values
     assert_golden "demo.winget.yaml", files.join("---\n")
   end
 
   def test_manifests_are_valid_yaml_with_the_expected_values
-    version, installer, locale = Tap::Winget.files(winget_tool, published_release).values.map do |y|
+    version, installer, locale = Tap::Targets::Winget.release_files(winget_tool, published_release).values.map do |y|
       YAML.safe_load(y, permitted_classes: [Date])
     end
 
@@ -50,13 +50,13 @@ class WingetTest < Minitest::Test
   end
 
   def test_no_release_date_without_a_publication_time
-    refute_match(/ReleaseDate/, Tap::Winget.installer_manifest(winget_tool, release(tool: winget_tool)))
+    refute_match(/ReleaseDate/, Tap::Targets::Winget.installer_manifest(winget_tool, release(tool: winget_tool)))
   end
 
   def test_render_includes_winget_only_for_tools_that_ask
-    readme = "#{Tap::Render::README_START}\n#{Tap::Render::README_END}\n"
+    readme = "#{Tap::Targets::Readme::START}\n#{Tap::Targets::Readme::STOP}\n"
     lock = Tap::Lock.new("x", { "demo" => published_release })
-    assert(Tap::Render.files([winget_tool], lock, readme:).keys.any? { |k| k.start_with?("winget/") })
-    assert(Tap::Render.files([tool], lock, readme:).keys.none? { |k| k.start_with?("winget/") })
+    assert(repository_files([winget_tool], lock, readme:).keys.any? { |k| k.start_with?("winget/") })
+    assert(repository_files([tool], lock, readme:).keys.none? { |k| k.start_with?("winget/") })
   end
 end

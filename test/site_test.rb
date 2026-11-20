@@ -16,7 +16,7 @@ class SiteTest < Minitest::Test
       "demo"  => release(tool: attested).with(published: "2026-11-12T23:15:45Z"),
       "other" => release("0.1.0", tool: checked),
     })
-    Tap::Site.files([attested, checked, tool(name: "unpublished")], lock)
+    Tap::Targets::Pages.files(catalog([attested, checked, tool(name: "unpublished")], lock))
   end
 
   def test_pages

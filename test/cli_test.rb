@@ -10,21 +10,21 @@ class CLITest < Minitest::Test
   Update = Tap::Sync::Update
 
   def test_commit_message_for_one_upgrade
-    msg = Tap::CLI.commit_message([Update.new(tool: "kiwa", from: "0.1.0", to: "0.2.0")])
+    msg = Tap::Commands::Sync.commit_message([Update.new(tool: "kiwa", from: "0.1.0", to: "0.2.0")])
     assert_equal "⬆️ build(kiwa): 0.2.0\n\n- kiwa: 0.1.0 -> 0.2.0\n", msg
   end
 
   def test_commit_message_for_a_new_tool
-    msg = Tap::CLI.commit_message([Update.new(tool: "kiwa", from: nil, to: "0.1.0")])
+    msg = Tap::Commands::Sync.commit_message([Update.new(tool: "kiwa", from: nil, to: "0.1.0")])
     assert msg.start_with?("✨ feat(kiwa): add 0.1.0\n")
   end
 
   def test_commit_message_for_several_tools_stays_within_72_characters
     few = [Update.new(tool: "kiwa", from: "1", to: "2"), Update.new(tool: "ship", from: "1", to: "2")]
-    assert_equal "⬆️ build(tools): kiwa 2, ship 2", Tap::CLI.commit_message(few).lines.first.chomp
+    assert_equal "⬆️ build(tools): kiwa 2, ship 2", Tap::Commands::Sync.commit_message(few).lines.first.chomp
 
     many = (1..9).map { |i| Update.new(tool: "tool-number-#{i}", from: "1.0.0", to: "1.0.1") }
-    header = Tap::CLI.commit_message(many).lines.first.chomp
+    header = Tap::Commands::Sync.commit_message(many).lines.first.chomp
     assert_equal "⬆️ build(tools): 9 updates", header
   end
 
@@ -85,7 +85,7 @@ class CLITest < Minitest::Test
   def test_sync_writes_lock_files_and_github_output
     Dir.mktmpdir do |root|
       File.binwrite(File.join(root, "tools.yml"), DEMO_TOOLS)
-      File.binwrite(File.join(root, "README.md"), "#{Tap::Render::README_START}\n#{Tap::Render::README_END}\n")
+      File.binwrite(File.join(root, "README.md"), "#{Tap::Targets::Readme::START}\n#{Tap::Targets::Readme::STOP}\n")
       output = File.join(root, "github_output")
       ENV["GITHUB_OUTPUT"] = output
       github = FakeGitHub.new({ "GregoireF/demo" => demo_release })

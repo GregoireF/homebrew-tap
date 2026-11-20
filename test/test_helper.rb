@@ -52,6 +52,13 @@ module TestHelpers
     Tap::Release.new(tag: "v#{version}", version:, verified: tool.verify, assets:, published: nil)
   end
 
+  def catalog(tools, lock, readme: "") = Tap::Catalog.new(tools:, lock:, readme:)
+
+  # Every committed file the repository targets produce for these inputs.
+  def repository_files(tools, lock, readme:)
+    Tap::Targets.files(Tap::Targets.repository, catalog(tools, lock, readme:))
+  end
+
   # Compares with test/golden/<name>; UPDATE_GOLDEN=1 rewrites the file.
   def assert_golden(name, actual)
     path = File.join(GOLDEN, name)
