@@ -2,10 +2,6 @@
 # SPDX-License-Identifier: MIT OR Apache-2.0
 # frozen_string_literal: true
 
-# Homebrew/SingleUseMethod is for Homebrew's own code; this generator keeps
-# named steps for readability and tests (AGENTS.md).
-# rubocop:disable Homebrew/SingleUseMethod
-
 require "time"
 
 module Tap
@@ -36,13 +32,22 @@ module Tap
       "#{findings.map { |f| "- #{f}" }.join("\n")}\n"
     end
 
+    def stale?(release)
+      return false if release.published.nil?
+
+      (@now - Time.iso8601(release.published)) / 86_400 > STALE_DAYS
+    end
+
     private
 
     def check(tool, release)
       return ["`#{tool.name}`: in tools.yml but never published (no stable release, or sync failing)"] if release.nil?
 
       findings = []
-      findings << stale(tool, release) if stale?(release)
+      if stale?(release)
+        findings << "`#{tool.name}`: last release #{release.version} on #{release.published[0, 10]}, " \
+                    "more than #{STALE_DAYS} days ago"
+      end
       if tool.verify == "attestation"
         missing = PLATFORMS.reject { |p| @github.attested?(tool.repo, release.sha256(p)) }
         unless missing.empty?
@@ -54,18 +59,5 @@ module Tap
       end
       findings
     end
-
-    def stale?(release)
-      return false if release.published.nil?
-
-      (@now - Time.iso8601(release.published)) / 86_400 > STALE_DAYS
-    end
-
-    def stale(tool, release)
-      "`#{tool.name}`: last release #{release.version} on #{release.published[0, 10]}, " \
-        "more than #{STALE_DAYS} days ago"
-    end
   end
 end
-
-# rubocop:enable Homebrew/SingleUseMethod

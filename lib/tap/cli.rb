@@ -2,10 +2,6 @@
 # SPDX-License-Identifier: MIT OR Apache-2.0
 # frozen_string_literal: true
 
-# Homebrew/SingleUseMethod is for Homebrew's own code; this generator keeps
-# named steps for readability and tests (AGENTS.md).
-# rubocop:disable Homebrew/SingleUseMethod
-
 module Tap
   # bin/tap: the commands CI and the owner run.
   class CLI
@@ -75,6 +71,18 @@ module Tap
       "#{header}\n\n#{body}\n"
     end
 
+    def prune_empty_dirs(rel)
+      Dir[path("#{rel}/**/")].sort_by { |d| -d.length }.each do |dir|
+        Dir.rmdir(dir) if Dir.empty?(dir)
+      end
+    end
+
+    def lint_commit(file)
+      problems = CommitLint.problems(File.binread(file).force_encoding(Encoding::UTF_8))
+      problems.each { |p| @err.puts "commit message: #{p}" }
+      problems.empty? ? 0 : 1
+    end
+
     private
 
     def tools = Config.load(path("tools.yml"))
@@ -109,12 +117,6 @@ module Tap
 
     def stray_files(files)
       GENERATED_GLOBS.flat_map { |glob| Dir[path(glob)] }.map { |f| f.delete_prefix("#{@root}/") } - files.keys
-    end
-
-    def prune_empty_dirs(rel)
-      Dir[path("#{rel}/**/")].sort_by { |d| -d.length }.each do |dir|
-        Dir.rmdir(dir) if Dir.empty?(dir)
-      end
     end
 
     def check
@@ -193,12 +195,6 @@ module Tap
       0
     end
 
-    def lint_commit(file)
-      problems = CommitLint.problems(File.binread(file).force_encoding(Encoding::UTF_8))
-      problems.each { |p| @err.puts "commit message: #{p}" }
-      problems.empty? ? 0 : 1
-    end
-
     def write(rel, content)
       return if read(rel) == content
 
@@ -219,5 +215,3 @@ module Tap
     end
   end
 end
-
-# rubocop:enable Homebrew/SingleUseMethod

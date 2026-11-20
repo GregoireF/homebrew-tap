@@ -2,10 +2,6 @@
 # SPDX-License-Identifier: MIT OR Apache-2.0
 # frozen_string_literal: true
 
-# Homebrew/SingleUseMethod is for Homebrew's own code; this generator keeps
-# named steps for readability and tests (AGENTS.md).
-# rubocop:disable Homebrew/SingleUseMethod
-
 require "json"
 
 module Tap
@@ -86,8 +82,6 @@ module Tap
       plain ? text : JSON.generate(text)
     end
 
-    private
-
     def pick(repo, platform, names)
       os, arch = platform.split("_")
       ext = (os == "windows") ? WINDOWS_ARCHIVE : UNIX_ARCHIVE
@@ -102,6 +96,15 @@ module Tap
       name = words.first&.downcase if words.uniq.size == 1
       name || raise(Error, "#{repo}: cannot tell the binary's name from #{archives.first}")
     end
+
+    # attestation when GitHub holds a provenance for the linux_amd64 archive.
+    def verify_level(repo, latest, checksums, archive)
+      sums = Checksums.parse(@github.read(latest[:assets].fetch(checksums)))
+      sha = sums[archive] || raise(Error, "#{repo}: #{checksums} does not list #{archive}")
+      @github.attested?(repo, sha) ? "attestation" : "checksum"
+    end
+
+    private
 
     def description(repo, name, text)
       desc = text.strip.sub(/\A(?:an?|the)\s+/i, "").sub(/[.!\s]+\z/, "")
@@ -128,14 +131,5 @@ module Tap
 
       spdx
     end
-
-    # attestation when GitHub holds a provenance for the linux_amd64 archive.
-    def verify_level(repo, latest, checksums, archive)
-      sums = Checksums.parse(@github.read(latest[:assets].fetch(checksums)))
-      sha = sums[archive] || raise(Error, "#{repo}: #{checksums} does not list #{archive}")
-      @github.attested?(repo, sha) ? "attestation" : "checksum"
-    end
   end
 end
-
-# rubocop:enable Homebrew/SingleUseMethod

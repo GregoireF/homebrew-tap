@@ -2,10 +2,6 @@
 # SPDX-License-Identifier: MIT OR Apache-2.0
 # frozen_string_literal: true
 
-# Homebrew/SingleUseMethod is for Homebrew's own code; this generator keeps
-# named steps for readability and tests (AGENTS.md).
-# rubocop:disable Homebrew/SingleUseMethod
-
 require_relative "test_helper"
 require "socket"
 
@@ -29,8 +25,6 @@ class GitHubTest < Minitest::Test
       @thread.kill
       @server.close
     end
-
-    private
 
     def serve(client)
       request_line = client.gets.to_s
@@ -126,5 +120,3 @@ class GitHubTest < Minitest::Test
     assert_raises(Tap::Error) { @github.read("#{@base}/missing") }
   end
 end
-
-# rubocop:enable Homebrew/SingleUseMethod

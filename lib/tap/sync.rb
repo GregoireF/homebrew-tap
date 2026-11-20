@@ -2,10 +2,6 @@
 # SPDX-License-Identifier: MIT OR Apache-2.0
 # frozen_string_literal: true
 
-# Homebrew/SingleUseMethod is for Homebrew's own code; this generator keeps
-# named steps for readability and tests (AGENTS.md).
-# rubocop:disable Homebrew/SingleUseMethod
-
 require "digest"
 require "rubygems"
 require "tmpdir"
@@ -51,20 +47,11 @@ module Tap
       Update.new(tool: tool.name, from: current&.version, to: version)
     end
 
-    private
-
     def version_of(tool, tag)
       version = tag.delete_prefix("v")
       raise Error, "#{tool.name}: tag #{tag} is not a version" unless version.match?(VERSION)
 
       version
-    end
-
-    def refuse_downgrade(tool, current, version)
-      return if current.nil?
-      return if Gem::Version.new(version) >= Gem::Version.new(current.version)
-
-      raise Error, "#{tool.name}: latest release #{version} is older than #{current.version}, refusing to downgrade"
     end
 
     def fetch_release(tool, latest, version)
@@ -76,12 +63,6 @@ module Tap
         end
         Release.new(tag: latest[:tag], version:, verified: tool.verify, assets:, published: latest[:published])
       end
-    end
-
-    def checksums(tool, latest)
-      (url = latest[:assets][tool.checksums]) ||
-        raise(Error, "#{tool.name} #{latest[:tag]}: release has no #{tool.checksums}")
-      Checksums.parse(@github.read(url))
     end
 
     def fetch_asset(tool, latest, name, sums, dir)
@@ -97,7 +78,20 @@ module Tap
       @verifier.check_attestation(path, tool.repo) if tool.verify == "attestation"
       actual
     end
+
+    private
+
+    def refuse_downgrade(tool, current, version)
+      return if current.nil?
+      return if Gem::Version.new(version) >= Gem::Version.new(current.version)
+
+      raise Error, "#{tool.name}: latest release #{version} is older than #{current.version}, refusing to downgrade"
+    end
+
+    def checksums(tool, latest)
+      (url = latest[:assets][tool.checksums]) ||
+        raise(Error, "#{tool.name} #{latest[:tag]}: release has no #{tool.checksums}")
+      Checksums.parse(@github.read(url))
+    end
   end
 end
-
-# rubocop:enable Homebrew/SingleUseMethod
