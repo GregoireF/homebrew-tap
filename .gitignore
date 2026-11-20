@@ -1,2 +1,4 @@
 # bin/tap site output
 /_site/
+# personal Claude Code settings
+/.claude/settings.local.json
