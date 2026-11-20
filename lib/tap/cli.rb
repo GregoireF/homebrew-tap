@@ -11,6 +11,8 @@ module Tap
       "check"       => Commands::Check,
       "add"         => Commands::Add,
       "discover"    => Commands::Discover,
+      "rollback"    => Commands::Rollback,
+      "unpin"       => Commands::Unpin,
       "health"      => Commands::Health,
       "site"        => Commands::Site,
       "lint-commit" => Commands::LintCommit,
@@ -26,7 +28,10 @@ module Tap
         add REPO           append a tools.yml entry inferred from REPO's latest release
         discover [--add]   list (or add) repositories with the gregoiref-tap topic
                            that are not in tools.yml yet
-        health             report stale tools and provenance problems (exit 1 if any)
+        rollback TOOL      pin TOOL to the stable release before the one served
+        unpin TOOL         remove TOOL's pin: back to the latest at the next sync
+        health             report stale or pinned tools and provenance problems
+                           (exit 1 if any)
         site DIR           write the catalog site into DIR
         lint-commit FILE   check a commit message (the commit-msg hook)
 

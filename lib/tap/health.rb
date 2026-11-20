@@ -44,6 +44,10 @@ module Tap
       return ["`#{tool.name}`: in tools.yml but never published (no stable release, or sync failing)"] if release.nil?
 
       findings = []
+      if tool.pin
+        findings << "`#{tool.name}` is pinned to #{tool.pin}: run `bin/tap unpin #{tool.name}` " \
+                    "once a fixed release is out"
+      end
       if stale?(release)
         findings << "`#{tool.name}`: last release #{release.version} on #{release.published[0, 10]}, " \
                     "more than #{STALE_DAYS} days ago"

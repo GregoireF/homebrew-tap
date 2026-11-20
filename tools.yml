@@ -28,6 +28,9 @@
 #                a formula with the tool's name (docs.brew.sh: name yours
 #                <user>-<tool>). Scoop and WinGet keep the tool's name.
 #   conflicts    Optional formulae installing the same binaries.
+#   pin          Optional quoted version: serve exactly that release instead of
+#                the latest. Written by `bin/tap rollback`, removed by
+#                `bin/tap unpin`; the nightly health report lists pinned tools.
 
 publisher: Grégoire Favreau
 

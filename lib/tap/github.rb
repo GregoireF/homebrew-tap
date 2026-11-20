@@ -22,7 +22,22 @@ module Tap
     # The latest stable release (GitHub never returns drafts or pre-releases
     # here): { tag:, published:, assets: { name => download URL } }, or nil.
     def latest_release(repo)
-      body = get_json("#{@api}/repos/#{repo}/releases/latest")
+      release_from(get_json("#{@api}/repos/#{repo}/releases/latest"))
+    end
+
+    # The release of one tag, same shape, or nil.
+    def release(repo, tag)
+      release_from(get_json("#{@api}/repos/#{repo}/releases/tags/#{URI.encode_www_form_component(tag)}"))
+    end
+
+    # Tags of the stable releases (no drafts, no pre-releases), newest first
+    # as GitHub lists them; the last 100 are enough to roll back.
+    def stable_tags(repo)
+      body = get_json("#{@api}/repos/#{repo}/releases?per_page=100") || []
+      body.reject { |r| r["draft"] || r["prerelease"] }.map { |r| r.fetch("tag_name") }
+    end
+
+    def release_from(body)
       return if body.nil?
 
       assets = body.fetch("assets").to_h { |a| [a.fetch("name"), a.fetch("browser_download_url")] }

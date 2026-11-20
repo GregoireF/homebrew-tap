@@ -30,7 +30,7 @@ module Tap
     end
 
     def sync(tool)
-      latest = @github.latest_release(tool.repo)
+      latest = wanted_release(tool)
       if latest.nil?
         @log.puts "#{tool.name}: no stable release yet"
         return
@@ -40,11 +40,20 @@ module Tap
       return if current && current.tag == latest[:tag] && current.verified == tool.verify
 
       version = version_of(tool, latest[:tag])
-      refuse_downgrade(tool, current, version)
+      # A pin is how a rollback is written: going back is its purpose.
+      refuse_downgrade(tool, current, version) unless tool.pin
 
       @log.puts "#{tool.name}: #{current&.version || "none"} -> #{version}"
       @lock[tool.name] = fetch_release(tool, latest, version)
       Update.new(tool: tool.name, from: current&.version, to: version)
+    end
+
+    # The latest stable release, or the pinned one (tag v<pin>, else <pin>).
+    def wanted_release(tool)
+      return @github.latest_release(tool.repo) unless tool.pin
+
+      @github.release(tool.repo, "v#{tool.pin}") || @github.release(tool.repo, tool.pin) ||
+        raise(Error, "#{tool.name}: no release for the pinned version #{tool.pin}")
     end
 
     def version_of(tool, tag)

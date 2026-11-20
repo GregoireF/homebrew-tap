@@ -12,8 +12,7 @@ module Tap
       def self.commit_message(updates)
         header =
           if updates.size == 1
-            u = updates.first
-            u.from ? "⬆️ build(#{u.tool}): #{u.to}" : "✨ feat(#{u.tool}): add #{u.to}"
+            single_header(updates.first)
           else
             list = updates.map { |u| "#{u.tool} #{u.to}" }.join(", ")
             candidate = "⬆️ build(tools): #{list}"
@@ -21,6 +20,16 @@ module Tap
           end
         body = updates.map { |u| "- #{u.tool}: #{u.from || "new"} -> #{u.to}" }.join("\n")
         "#{header}\n\n#{body}\n"
+      end
+
+      def self.single_header(update)
+        if update.from.nil?
+          "✨ feat(#{update.tool}): add #{update.to}"
+        elsif Gem::Version.new(update.to) < Gem::Version.new(update.from)
+          "⏪ revert(#{update.tool}): back to #{update.to}"
+        else
+          "⬆️ build(#{update.tool}): #{update.to}"
+        end
       end
 
       def call(_args)

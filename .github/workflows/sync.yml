@@ -24,6 +24,13 @@ on:
   schedule:
     - cron: "*/30 * * * *"
   workflow_dispatch:
+    inputs:
+      rollback:
+        description: >-
+          Tool to roll back to its previous stable release (bin/tap rollback);
+          it then goes through the same verification and install tests.
+        type: string
+        default: ""
 
 permissions: {}
 
@@ -51,7 +58,17 @@ jobs:
       - uses: ruby/setup-ruby@b3aaceaef7e0ee231b499e7b5f49c03fc1d32199 # v1.338.0
         with:
           ruby-version: "3.4"
+      - name: roll back
+        if: inputs.rollback != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TOOL: ${{ inputs.rollback }}
+        run: |
+          set -euo pipefail
+          [[ "$TOOL" =~ ^[a-z0-9][a-z0-9-]*$ ]] || { echo "::error::not a tool name: $TOOL"; exit 1; }
+          bin/tap rollback "$TOOL"
       - name: discover new tools
+        if: inputs.rollback == ''
         env:
           GH_TOKEN: ${{ github.token }}
         run: bin/tap discover --add

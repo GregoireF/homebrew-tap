@@ -56,15 +56,22 @@ class GitHubTest < Minitest::Test
     with_attestation = "/api/repos/o/r/attestations/sha256:aa?per_page=1"
     without_attestation = "/api/repos/o/r/attestations/sha256:bb?per_page=1"
     @server = Server.new(
-      "/api/repos/o/r/releases/latest" => [200, {}, JSON.generate(@release)],
-      search                           => [200, {}, JSON.generate("items" => [{ "full_name" => "o/x" }])],
-      "/api/repos/o/r"                 => [200, {}, repo],
-      with_attestation                 => [200, {}, attested],
-      without_attestation              => [200, {}, JSON.generate("attestations" => [])],
-      "/download/a.tar.gz"             => [302, { "Location" => "/storage/a.tar.gz" }, ""],
-      "/storage/a.tar.gz"              => [200, {}, "archive bytes"],
-      "/loop"                          => [302, { "Location" => "/loop" }, ""],
-      "/boom"                          => [500, {}, "nope"],
+      "/api/repos/o/r/releases/latest"       => [200, {}, JSON.generate(@release)],
+      search                                 => [200, {}, JSON.generate("items" => [{ "full_name" => "o/x" }])],
+      "/api/repos/o/r"                       => [200, {}, repo],
+      "/api/repos/o/r/releases/tags/v1.0.0"  => [200, {}, JSON.generate(@release)],
+      "/api/repos/o/r/releases?per_page=100" => [200, {}, JSON.generate([
+        { "tag_name" => "v1.2.0-rc.1", "prerelease" => true, "draft" => false },
+        { "tag_name" => "v1.1.0", "prerelease" => false, "draft" => false },
+        { "tag_name" => "v1.0.5", "prerelease" => false, "draft" => true },
+        { "tag_name" => "v1.0.0", "prerelease" => false, "draft" => false },
+      ])],
+      with_attestation                       => [200, {}, attested],
+      without_attestation                    => [200, {}, JSON.generate("attestations" => [])],
+      "/download/a.tar.gz"                   => [302, { "Location" => "/storage/a.tar.gz" }, ""],
+      "/storage/a.tar.gz"                    => [200, {}, "archive bytes"],
+      "/loop"                                => [302, { "Location" => "/loop" }, ""],
+      "/boom"                                => [500, {}, "nope"],
     )
     @base = "http://127.0.0.1:#{@server.port}"
     @github = Tap::GitHub.new(token: "secret", api: "#{@base}/api")
@@ -82,6 +89,13 @@ class GitHubTest < Minitest::Test
 
   def test_missing_release_is_nil
     assert_nil @github.latest_release("o/none")
+  end
+
+  def test_release_by_tag_and_stable_tags
+    assert_equal "v1.0.0", @github.release("o/r", "v1.0.0")[:tag]
+    assert_nil @github.release("o/r", "v9.9.9")
+    assert_equal %w[v1.1.0 v1.0.0], @github.stable_tags("o/r")
+    assert_empty @github.stable_tags("o/none")
   end
 
   def test_repository_and_attestations

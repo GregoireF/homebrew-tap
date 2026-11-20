@@ -42,7 +42,7 @@ module TestHelpers
                   assets: Tap::PLATFORMS.to_h do |p|
                     [p, p.start_with?("windows") ? "demo_{version}_#{p}.zip" : "demo_{version}_#{p}.tar.gz"]
                   end,
-                  caveats: nil, completions: nil, winget: nil, formula: nil, conflicts: [], publisher: nil,
+                  caveats: nil, completions: nil, winget: nil, formula: nil, conflicts: [], pin: nil, publisher: nil,
                   **overrides)
   end
 
@@ -77,18 +77,25 @@ module TestHelpers
     # releases: { repo => { tag:, published:, files: { name => bytes } } }
     # repos:    { repo => { description:, license:, topics: } }
     # attested: SHA-256 digests GitHub holds a provenance for.
-    def initialize(releases, repos: {}, attested: [])
+    def initialize(releases, repos: {}, attested: [], older: {})
       @releases = releases
+      @older = older
       @repos = repos
       @attested = attested
       @downloads = []
     end
 
     def latest_release(repo)
-      (r = @releases[repo]) || return
-      { tag: r[:tag], published: r[:published],
-        assets: r[:files].keys.to_h { |name| [name, "fake://#{repo}/#{name}"] } }
+      (r = @releases[repo]) && shape(repo, r)
     end
+
+    # A release by tag: the configured release when its tag matches, or an
+    # entry of `older` (repo => [release hashes]).
+    def release(repo, tag)
+      (r = all(repo).find { |c| c[:tag] == tag }) && shape(repo, r)
+    end
+
+    def stable_tags(repo) = all(repo).map { |r| r[:tag] }
 
     def repository(repo) = @repos.fetch(repo)
 
@@ -106,9 +113,19 @@ module TestHelpers
 
     private
 
+    def all(repo) = [@releases[repo], *@older.fetch(repo, [])].compact
+
+    # URLs carry the tag (fake://owner/repo@tag/name): two releases can have
+    # a file of the same name, such as checksums.txt.
+    def shape(repo, release)
+      { tag: release[:tag], published: release[:published],
+        assets: release[:files].keys.to_h { |name| [name, "fake://#{repo}@#{release[:tag]}/#{name}"] } }
+    end
+
     def bytes(url)
-      repo, name = url.delete_prefix("fake://").split("/", 3).then { |o, r, n| ["#{o}/#{r}", n] }
-      @releases.fetch(repo)[:files].fetch(name)
+      where, name = url.delete_prefix("fake://").split("/", 3).then { |o, r, n| ["#{o}/#{r}", n] }
+      repo, tag = where.split("@", 2)
+      all(repo).find { |r| r[:tag] == tag }.fetch(:files).fetch(name)
     end
   end
 

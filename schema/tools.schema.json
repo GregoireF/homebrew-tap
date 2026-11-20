@@ -75,6 +75,11 @@
           "minItems": 1,
           "description": "Arguments that make the first binary print a completion script; the shell's name is appended."
         },
+        "pin": {
+          "type": "string",
+          "pattern": "^\\d+(?:\\.\\d+)*(?:[-+][0-9A-Za-z.-]+)?$",
+          "description": "Serve exactly this release instead of the latest (written by bin/tap rollback; quote it)."
+        },
         "formula": {
           "type": "string",
           "pattern": "^[a-z0-9][a-z0-9-]*$",
