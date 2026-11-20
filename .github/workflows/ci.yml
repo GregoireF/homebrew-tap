@@ -1,0 +1,136 @@
+# SPDX-License-Identifier: MIT OR Apache-2.0
+#
+# Every push and pull request: the generator's tests (with a coverage floor),
+# generated files in sync with tools.yml, Homebrew's own style and audit,
+# license headers, commit header format, and workflow linting.
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: test
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ruby/setup-ruby@b3aaceaef7e0ee231b499e7b5f49c03fc1d32199 # v1.338.0
+        with:
+          ruby-version: "3.4"
+      # rake = unit and golden tests (coverage floor 90%) + bin/tap check.
+      - run: rake
+
+  brew:
+    name: brew style and audit
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      # Links this checkout as the gregoiref/tap tap.
+      - uses: Homebrew/actions/setup-homebrew@2fc0550883426e204806834287d18a011bdcfff4 # main, 2026-11-12
+      - run: brew style gregoiref/tap
+      - run: brew audit --strict --online --tap gregoiref/tap
+
+  license:
+    name: license headers
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: GregoireF/addlicense-action@d6b6efe93aadbe35d9c325ccb6af232127342c23 # v1.0.1
+        with:
+          # Pinned by commit, the action cannot read its version from the ref.
+          version: v1.0.1
+          # Formula/ and bucket/ are generated; JSON and Markdown take no header.
+          args: >-
+            --check --template .github/license-header.txt
+            --ignore "Formula,bucket,winget,test/golden,templates,*.md,*.json,LICENSE-*,.gitattributes,.gitignore,.github/license-header.txt"
+            .
+
+  title:
+    name: commit header
+    if: github.event_name != 'workflow_dispatch'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - name: header to check
+        id: header
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          HEAD_MESSAGE: ${{ github.event.head_commit.message }}
+        run: |
+          set -euo pipefail
+          header="${PR_TITLE:-${HEAD_MESSAGE%%$'\n'*}}"
+          {
+            echo "title<<EOF_TITLE"
+            printf '%s\n' "$header"
+            echo "EOF_TITLE"
+          } >> "$GITHUB_OUTPUT"
+      # ship-it's own parser: `✨ feat(scope): subject`, header <= 72 characters.
+      - uses: GregoireF/ship-it/actions/check-title@774c758171f9e255e79a9321e5e654848a856902 # v0.1.2
+        with:
+          title: ${{ steps.header.outputs.title }}
+          version: "0.1.2"
+          verify-attestation: "true"
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+  workflows:
+    name: actionlint and zizmor
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: actionlint
+        run: docker run --rm -v "$PWD:/repo" --workdir /repo rhysd/actionlint:1.7.12 -color
+      - uses: zizmorcore/zizmor-action@45d7276c9ca790aabd705e31ca99c6185c3e76dd # v0.8.1
+        with:
+          advanced-security: false
+
+  # Dependabot's monthly pull request merges itself once every job above
+  # passed: GitHub signs the squash commit, so main keeps only verified
+  # commits. Never runs for anyone else's pull request.
+  automerge:
+    name: automerge
+    needs: [test, brew, license, title, workflows]
+    if: github.event_name == 'pull_request' && github.event.pull_request.user.login == 'dependabot[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: gh pr merge "$PR" --squash --delete-branch --match-head-commit "$HEAD_SHA"

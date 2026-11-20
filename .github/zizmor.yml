@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: MIT OR Apache-2.0
+rules:
+  # zizmor prefers GitHub's `uses: $/.github/workflows/...`, but actionlint
+  # 1.7.12 rejects it (GregoireF/kiwa ignores that actionlint error instead).
+  # `./` works with both; switch once actionlint knows `$/`.
+  self-repository:
+    disable: true

@@ -1,0 +1,26 @@
+# SPDX-License-Identifier: MIT OR Apache-2.0
+name: Install or upgrade problem
+description: brew or scoop fails to install, upgrade or run a tool from this tap.
+body:
+  - type: dropdown
+    id: manager
+    attributes:
+      label: Package manager
+      options: [Homebrew on macOS, Homebrew on Linux, Scoop on Windows]
+    validations:
+      required: true
+  - type: input
+    id: tool
+    attributes:
+      label: Tool and version
+      placeholder: ship 0.1.2
+    validations:
+      required: true
+  - type: textarea
+    id: command
+    attributes:
+      label: Command and full output
+      description: For Homebrew, add the output of `brew config` and `brew doctor`.
+      render: text
+    validations:
+      required: true
