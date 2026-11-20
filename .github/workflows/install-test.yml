@@ -23,20 +23,16 @@ permissions: {}
 
 jobs:
   homebrew:
-    name: brew ${{ matrix.name || matrix.os }}
+    name: brew ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         # macOS 26 and 15 on Apple silicon, the last Intel image, Linux on
-        # both architectures, and Linux in Homebrew's own image as its CI does.
+        # both architectures. Not Homebrew's ghcr.io/homebrew/brew image: it
+        # runs as a non-root user that cannot write the runner's files, so
+        # actions/checkout and the candidate artifact fail there (EACCES).
         os: [macos-26, macos-15, macos-15-intel, ubuntu-24.04, ubuntu-24.04-arm]
-        include:
-          - os: ubuntu-24.04
-            name: ghcr.io/homebrew/brew
-            container: ghcr.io/homebrew/brew:main
     runs-on: ${{ matrix.os }}
-    # Same unpinned image as the `brew tap-new` template.
-    container: ${{ fromJSON(toJSON(matrix.container)) }} # zizmor: ignore[unpinned-images]
     timeout-minutes: 30
     permissions:
       contents: read
@@ -66,7 +62,7 @@ jobs:
             brew uninstall --formula "gregoiref/tap/$name"
             echo "::endgroup::"
           done
-      - if: inputs.artifact != '' && matrix.name == 'ghcr.io/homebrew/brew'
+      - if: inputs.artifact != '' && matrix.os == 'ubuntu-24.04'
         run: brew test-bot --only-tap-syntax
 
   scoop:
