@@ -55,6 +55,11 @@ commits, and its README listed one tool out of three.
 
 ## Phase 2: hands-off publishing
 
+Verified on GitHub on 2026-11-20: `sync.yml` detects and verifies all three
+tools; `install-test.yml` installs and tests them on the 6 runners, `winget
+validate` passes on windows-2025, the health report is clean; the catalog
+is live. Publishing waits for `TAP_SIGNING_KEY`.
+
 - [x] `sync.yml` (every 30 minutes, plus `workflow_dispatch`): detect and
       verify → install tests on the generated files → one signed commit
       pushed to `main`. The job's own `GITHUB_TOKEN` pushes: no GitHub App
