@@ -42,7 +42,8 @@ module TestHelpers
                   assets: Tap::PLATFORMS.to_h do |p|
                     [p, p.start_with?("windows") ? "demo_{version}_#{p}.zip" : "demo_{version}_#{p}.tar.gz"]
                   end,
-                  caveats: nil, completions: nil, winget: nil, publisher: nil, **overrides)
+                  caveats: nil, completions: nil, winget: nil, formula: nil, conflicts: [], publisher: nil,
+                  **overrides)
   end
 
   def release(version = "1.2.3", tool: self.tool)

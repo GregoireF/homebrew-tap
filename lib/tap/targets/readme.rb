@@ -29,7 +29,7 @@ module Tap
           badge = (release.verified == "attestation") ? "SLSA provenance" : "SHA-256"
           "| [`#{tool.name}`](#{tool.homepage}) | #{tool.desc} | " \
             "[#{release.version}](#{tool.homepage}/releases/tag/#{release.tag}) | " \
-            "`brew install gregoiref/tap/#{tool.name}` | `scoop install gregoiref/#{tool.name}` | #{badge} |"
+            "`brew install gregoiref/tap/#{tool.formula_name}` | `scoop install gregoiref/#{tool.name}` | #{badge} |"
         end
         <<~MD
 

@@ -24,6 +24,10 @@
 #                completion script; the shell's name is appended (bash, zsh, fish).
 #   winget       Optional WinGet package identifier: manifests are generated
 #                in winget/ and submitted to microsoft/winget-pkgs.
+#   formula      Optional Homebrew formula name, when homebrew-core already has
+#                a formula with the tool's name (docs.brew.sh: name yours
+#                <user>-<tool>). Scoop and WinGet keep the tool's name.
+#   conflicts    Optional formulae installing the same binaries.
 
 publisher: Grégoire Favreau
 
@@ -40,6 +44,9 @@ tools:
     checksums: checksums.txt
     completions: [completion]
     winget: GregoireF.addlicense
+    # homebrew-core's addlicense is google/addlicense, another tool.
+    formula: gregoiref-addlicense
+    conflicts: [addlicense]
     assets:
       darwin_amd64: addlicense_darwin_amd64.tar.gz
       darwin_arm64: addlicense_darwin_arm64.tar.gz

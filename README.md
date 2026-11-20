@@ -21,7 +21,7 @@ the tools that provide them.
 
 | Tool | Description | Version | Homebrew | Scoop | Verified with |
 | --- | --- | --- | --- | --- | --- |
-| [`addlicense`](https://github.com/GregoireF/addlicense) | Fast, minimal license header manager for monorepos and CI pipelines | [1.0.1](https://github.com/GregoireF/addlicense/releases/tag/v1.0.1) | `brew install gregoiref/tap/addlicense` | `scoop install gregoiref/addlicense` | SHA-256 |
+| [`addlicense`](https://github.com/GregoireF/addlicense) | Fast, minimal license header manager for monorepos and CI pipelines | [1.0.1](https://github.com/GregoireF/addlicense/releases/tag/v1.0.1) | `brew install gregoiref/tap/gregoiref-addlicense` | `scoop install gregoiref/addlicense` | SHA-256 |
 | [`kiwa`](https://github.com/GregoireF/kiwa) | Find any project, run any task: workspace launcher for humans and AI agents | [0.1.0](https://github.com/GregoireF/kiwa/releases/tag/v0.1.0) | `brew install gregoiref/tap/kiwa` | `scoop install gregoiref/kiwa` | SLSA provenance |
 | [`ship`](https://github.com/GregoireF/ship-it) | You write the code, ship handles git and GitHub | [0.1.2](https://github.com/GregoireF/ship-it/releases/tag/v0.1.2) | `brew install gregoiref/tap/ship` | `scoop install gregoiref/ship` | SLSA provenance |
 
@@ -79,15 +79,21 @@ gh release download v0.1.2 --repo GregoireF/ship-it --pattern 'ship_0.1.2_linux_
 gh attestation verify ship_0.1.2_linux_amd64.tar.gz --repo GregoireF/ship-it
 ```
 
-## addlicense: moving from the cask to the formula
+## addlicense is `gregoiref-addlicense` in Homebrew
 
-addlicense used to be a cask, and macOS quarantines what a cask installs:
-the unsigned binary could refuse to start. It is a formula now. If you
-installed the cask:
+homebrew-core has its own `addlicense` formula, for
+[google/addlicense](https://github.com/google/addlicense), a different
+tool. This tap's formula is therefore named `gregoiref-addlicense`; the
+command it installs is still `addlicense`, so the two formulae cannot be
+installed together. The old name `gregoiref/tap/addlicense` still resolves
+to the new one.
+
+addlicense also used to be a cask, which macOS quarantines (the unsigned
+binary could refuse to start). If you installed the cask:
 
 ```sh
 brew uninstall --cask addlicense
-brew install gregoiref/tap/addlicense
+brew install gregoiref/tap/gregoiref-addlicense
 ```
 
 ## How this tap works

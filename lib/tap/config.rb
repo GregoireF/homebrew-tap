@@ -12,10 +12,16 @@ module Tap
 
   # One entry of tools.yml (plus the file's top-level `publisher`).
   Tool = Data.define(:name, :repo, :desc, :license, :binaries, :test, :verify, :checksums, :assets,
-                     :caveats, :completions, :winget, :publisher) do
-    # Homebrew's class name for a formula name (Formulary.class_s).
+                     :caveats, :completions, :winget, :formula, :conflicts, :publisher) do
+    # The Homebrew formula's name: `formula` when the tool's own name is
+    # taken in homebrew-core, the tool's name otherwise.
+    define_method(:formula_name) do
+      formula || name
+    end
+
+    # Homebrew's class name for the formula name (Formulary.class_s).
     define_method(:class_name) do
-      name.capitalize.gsub(/[-_.\s]([a-zA-Z0-9])/) { Regexp.last_match(1).upcase }.tr("+", "x")
+      formula_name.capitalize.gsub(/[-_.\s]([a-zA-Z0-9])/) { Regexp.last_match(1).upcase }.tr("+", "x")
     end
 
     define_method(:homepage) do
@@ -30,10 +36,11 @@ module Tap
   # Loads and validates tools.yml. schema/tools.schema.json describes the same
   # rules for editors; test/schema_test.rb keeps the two in step.
   module Config
-    KEYS = %w[repo desc license binaries test verify checksums assets caveats completions winget].freeze
-    OPTIONAL = %w[caveats completions winget].freeze
+    OPTIONAL = %w[caveats completions winget formula conflicts].freeze
+    KEYS = (%w[repo desc license binaries test verify checksums assets] + OPTIONAL).freeze
     REQUIRED = (KEYS - OPTIONAL).freeze
     TOP_LEVEL = %w[publisher tools].freeze
+    NAME = /\A[a-z0-9][a-z0-9-]*\z/
     WINGET_ID = /\A[A-Za-z0-9][\w-]*\.[A-Za-z0-9][\w.-]*\z/
 
     module_function
@@ -59,7 +66,8 @@ module Tap
         name:, repo: entry["repo"], desc: entry["desc"], license: entry["license"],
         binaries: entry["binaries"].freeze, test: entry["test"].freeze, verify: entry["verify"],
         checksums: entry["checksums"], assets: entry["assets"].freeze, caveats: entry["caveats"],
-        completions: entry["completions"]&.freeze, winget: entry["winget"], publisher:
+        completions: entry["completions"]&.freeze, winget: entry["winget"], formula: entry["formula"],
+        conflicts: entry.fetch("conflicts", []).freeze, publisher:
       )
     end
 
@@ -72,7 +80,7 @@ module Tap
     end
 
     def check_values(name, entry, where)
-      raise Error, "#{where}: name must match [a-z0-9-]+" unless name.match?(/\A[a-z0-9][a-z0-9-]*\z/)
+      raise Error, "#{where}: name must match [a-z0-9-]+" unless name.match?(NAME)
       raise Error, "#{where}.repo: expected owner/name" unless entry["repo"].to_s.match?(%r{\A[\w.-]+/[\w.-]+\z})
 
       check_desc(name, entry["desc"].to_s, where)
@@ -96,6 +104,15 @@ module Tap
       if entry.key?("completions")
         check_strings(entry["completions"], "#{where}.completions")
         raise Error, "#{where}.completions: empty" if entry["completions"].empty?
+      end
+      if entry.key?("formula") && !entry["formula"].to_s.match?(NAME)
+        raise Error, "#{where}.formula: must match [a-z0-9-]+"
+      end
+
+      if entry.key?("conflicts")
+        check_strings(entry["conflicts"], "#{where}.conflicts")
+        bad = entry["conflicts"].grep_v(NAME)
+        raise Error, "#{where}.conflicts: not formula names: #{bad.join(", ")}" unless bad.empty?
       end
       return unless entry.key?("winget")
 

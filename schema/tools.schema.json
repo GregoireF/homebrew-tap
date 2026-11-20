@@ -75,6 +75,15 @@
           "minItems": 1,
           "description": "Arguments that make the first binary print a completion script; the shell's name is appended."
         },
+        "formula": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*$",
+          "description": "Homebrew formula name when the tool's name is taken in homebrew-core (Formula/<formula>.rb)."
+        },
+        "conflicts": {
+          "$ref": "#/$defs/strings",
+          "description": "Formulae that install the same binaries (conflicts_with in the formula)."
+        },
         "winget": {
           "type": "string",
           "pattern": "^[A-Za-z0-9][\\w-]*\\.[A-Za-z0-9][\\w.-]*$",

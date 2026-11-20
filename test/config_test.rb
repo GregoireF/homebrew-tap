@@ -85,6 +85,17 @@ class ConfigTest < Minitest::Test
     assert_config_error(/winget: needs a top-level `publisher`/) { build(winget: "GregoireF.demo") }
   end
 
+  def test_optional_formula_and_conflicts
+    tool = build(formula: "gregoiref-demo", conflicts: ["demo"])
+    assert_equal "gregoiref-demo", tool.formula_name
+    assert_equal ["demo"], tool.conflicts
+    assert_equal "demo", build.formula_name
+    assert_empty build.conflicts
+
+    assert_config_error(/formula: must match/) { build(formula: "Demo Tool") }
+    assert_config_error(/conflicts: not formula names: Bad/) { build(conflicts: ["Bad"]) }
+  end
+
   def test_unknown_top_level_keys
     Dir.mktmpdir do |dir|
       path = File.join(dir, "tools.yml")

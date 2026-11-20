@@ -27,6 +27,16 @@ class TargetsTest < Minitest::Test
     refute_match(/generate_completions/, Tap::Targets::Homebrew.formula(tool, release))
   end
 
+  def test_formula_name_and_conflicts
+    t = tool(name: "addlicense", formula: "gregoiref-addlicense", conflicts: ["addlicense"])
+    files = Tap::Targets::Homebrew.files(catalog([t], Tap::Lock.new("x", { "addlicense" => release(tool: t) })))
+    assert_equal ["Formula/gregoiref-addlicense.rb"], files.keys
+    formula = files.values.first
+    assert_includes formula, "class GregoireFAddlicense < Formula".sub("GregoireF", "Gregoiref")
+    assert_includes formula, 'conflicts_with "addlicense", because: "both install `demo`"'
+    refute_match(/conflicts_with/, Tap::Targets::Homebrew.formula(tool, release))
+  end
+
   def test_license_expressions
     assert_match(/license "MIT"$/, Tap::Targets::Homebrew.formula(tool, release))
     assert_match(/license any_of: \["MIT", "Apache-2.0"\]/,

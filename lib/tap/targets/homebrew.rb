@@ -13,7 +13,7 @@ module Tap
       module_function
 
       def files(catalog)
-        catalog.served.to_h { |tool, release| ["Formula/#{tool.name}.rb", formula(tool, release)] }
+        catalog.served.to_h { |tool, release| ["Formula/#{tool.formula_name}.rb", formula(tool, release)] }
       end
 
       def formula(tool, release) = Context.new(tool, release).render

@@ -35,6 +35,12 @@ class <%= tool.class_name %> < Formula
     end
   end
 
+<% tool.conflicts.each do |other| -%>
+  conflicts_with <%= q other %>, because: <%= q "both install #{tool.binaries.map { |b| "`#{b}`" }.join(", ")}" %>
+<% end -%>
+<% unless tool.conflicts.empty? -%>
+
+<% end -%>
   def install
     bin.install <%= tool.binaries.map { |b| q b }.join(", ") %>
 <% if tool.completions -%>
