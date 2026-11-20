@@ -1,0 +1,22 @@
+{
+  "version": "1.0.1",
+  "description": "Fast, minimal license header manager for monorepos and CI pipelines",
+  "homepage": "https://github.com/GregoireF/addlicense",
+  "license": "MIT",
+  "architecture": {
+    "64bit": {
+      "url": "https://github.com/GregoireF/addlicense/releases/download/v1.0.1/addlicense_windows_amd64.zip",
+      "hash": "42b316c19de4f74551d804c6c1a790f2a88a284700f6410244f4719a44a7979c",
+      "bin": [
+        "addlicense.exe"
+      ]
+    },
+    "arm64": {
+      "url": "https://github.com/GregoireF/addlicense/releases/download/v1.0.1/addlicense_windows_arm64.zip",
+      "hash": "dddf8b990081e8680947af0ea6dde163badbd1a724188704fd386e9168ed63ce",
+      "bin": [
+        "addlicense.exe"
+      ]
+    }
+  }
+}
