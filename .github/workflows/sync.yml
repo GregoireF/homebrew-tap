@@ -83,9 +83,12 @@ jobs:
     uses: ./.github/workflows/install-test.yml
     with:
       artifact: tap-sync
+    # Everything a job of install-test.yml asks for, even the ones skipped on a
+    # candidate (health, report): GitHub refuses to start the run otherwise.
     permissions:
       contents: read
       issues: write
+      attestations: read
 
   publish:
     name: signed commit to main
