@@ -2,6 +2,10 @@
 # SPDX-License-Identifier: MIT OR Apache-2.0
 # frozen_string_literal: true
 
+# Homebrew/SingleUseMethod is for Homebrew's own code; this generator keeps
+# named steps for readability and tests (AGENTS.md).
+# rubocop:disable Homebrew/SingleUseMethod
+
 require "json"
 
 module Tap
@@ -95,7 +99,7 @@ module Tap
 
     def binary_name(repo, archives)
       words = archives.map { |a| a[LEADING_WORD] }
-      name = (words.uniq.size == 1) ? words.first&.downcase : nil
+      name = words.first&.downcase if words.uniq.size == 1
       name || raise(Error, "#{repo}: cannot tell the binary's name from #{archives.first}")
     end
 
@@ -133,3 +137,5 @@ module Tap
     end
   end
 end
+
+# rubocop:enable Homebrew/SingleUseMethod

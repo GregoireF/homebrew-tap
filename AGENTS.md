@@ -21,6 +21,10 @@ generated from `tools.yml` and `tools.lock.json` by the Ruby generator in
 - Style is Homebrew's: `brew style gregoiref/tap`. Its autocorrect has broken
   this code before (it rewrote methods inside `Data.define` blocks and
   activated an interpolation in a test): check the diff after `--fix`.
+  Never take its `exclude?` suggestion: that method exists only inside
+  Homebrew, and `bin/tap` runs on plain Ruby. `Homebrew/SingleUseMethod` is
+  disabled per file (named steps stay). Check against an updated Homebrew
+  (`brew update` in the container): CI always runs the latest one.
 - Files are read and written in binary mode (`File.binread`/`binwrite`):
   LF everywhere, on Windows too.
 - Every Ruby file starts with `# typed: strict` then

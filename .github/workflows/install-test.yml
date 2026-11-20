@@ -42,6 +42,10 @@ jobs:
           name: ${{ inputs.artifact }}
       # Links this checkout, artifact included, as the gregoiref/tap tap.
       - uses: Homebrew/actions/setup-homebrew@2fc0550883426e204806834287d18a011bdcfff4 # main, 2026-11-12
+      # Homebrew 7 loads formulae of a non-official tap only once trusted; the
+      # tap here is this checkout. Older versions have no `trust` command.
+      - name: trust the tap
+        run: if brew commands | grep -qx trust; then brew trust --tap gregoiref/tap; fi
       - name: install and test every formula
         env:
           HOMEBREW_NO_AUTO_UPDATE: "1"

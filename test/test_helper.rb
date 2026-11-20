@@ -61,62 +61,62 @@ module TestHelpers
     end
     assert_equal File.binread(path).force_encoding(Encoding::UTF_8), actual, "golden #{name} differs"
   end
-end
 
-# Serves releases from memory instead of api.github.com.
-class FakeGitHub
-  attr_reader :downloads
+  # Serves releases from memory instead of api.github.com.
+  class FakeGitHub
+    attr_reader :downloads
 
-  # releases: { repo => { tag:, published:, files: { name => bytes } } }
-  # repos:    { repo => { description:, license:, topics: } }
-  # attested: SHA-256 digests GitHub holds a provenance for.
-  def initialize(releases, repos: {}, attested: [])
-    @releases = releases
-    @repos = repos
-    @attested = attested
-    @downloads = []
+    # releases: { repo => { tag:, published:, files: { name => bytes } } }
+    # repos:    { repo => { description:, license:, topics: } }
+    # attested: SHA-256 digests GitHub holds a provenance for.
+    def initialize(releases, repos: {}, attested: [])
+      @releases = releases
+      @repos = repos
+      @attested = attested
+      @downloads = []
+    end
+
+    def latest_release(repo)
+      (r = @releases[repo]) || return
+      { tag: r[:tag], published: r[:published],
+        assets: r[:files].keys.to_h { |name| [name, "fake://#{repo}/#{name}"] } }
+    end
+
+    def repository(repo) = @repos.fetch(repo)
+
+    def attested?(_repo, sha256) = @attested.include?(sha256)
+
+    def read(url) = bytes(url)
+
+    def repos_with_topic(_owner, _topic) = @releases.keys
+
+    def download(url, dest)
+      @downloads << url
+      File.binwrite(dest, bytes(url))
+      dest
+    end
+
+    private
+
+    def bytes(url)
+      repo, name = url.delete_prefix("fake://").split("/", 3).then { |o, r, n| ["#{o}/#{r}", n] }
+      @releases.fetch(repo)[:files].fetch(name)
+    end
   end
 
-  def latest_release(repo)
-    (r = @releases[repo]) || return
-    { tag: r[:tag], published: r[:published],
-      assets: r[:files].keys.to_h { |name| [name, "fake://#{repo}/#{name}"] } }
-  end
+  class FakeVerifier
+    attr_reader :checked
 
-  def repository(repo) = @repos.fetch(repo)
+    def initialize(reject: [])
+      @reject = reject
+      @checked = []
+    end
 
-  def attested?(_repo, sha256) = @attested.include?(sha256)
+    def check_attestation(path, repo)
+      name = File.basename(path)
+      raise Tap::Error, "#{name}: no valid provenance from #{repo}" if @reject.include?(name)
 
-  def read(url) = bytes(url)
-
-  def repos_with_topic(_owner, _topic) = @releases.keys
-
-  def download(url, dest)
-    @downloads << url
-    File.binwrite(dest, bytes(url))
-    dest
-  end
-
-  private
-
-  def bytes(url)
-    repo, name = url.delete_prefix("fake://").split("/", 3).then { |o, r, n| ["#{o}/#{r}", n] }
-    @releases.fetch(repo)[:files].fetch(name)
-  end
-end
-
-class FakeVerifier
-  attr_reader :checked
-
-  def initialize(reject: [])
-    @reject = reject
-    @checked = []
-  end
-
-  def check_attestation(path, repo)
-    name = File.basename(path)
-    raise Tap::Error, "#{name}: no valid provenance from #{repo}" if @reject.include?(name)
-
-    @checked << name
+      @checked << name
+    end
   end
 end

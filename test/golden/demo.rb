@@ -6,8 +6,6 @@
 class Demo < Formula
   desc "Demonstrates the tap"
   homepage "https://github.com/GregoireF/demo"
-  # Explicit: Homebrew would read "64" from archive names like x86_64.
-  version "1.2.3"
   license "MIT"
 
   livecheck do

@@ -2,6 +2,10 @@
 # SPDX-License-Identifier: MIT OR Apache-2.0
 # frozen_string_literal: true
 
+# Homebrew/SingleUseMethod is for Homebrew's own code; this generator keeps
+# named steps for readability and tests (AGENTS.md).
+# rubocop:disable Homebrew/SingleUseMethod
+
 module Tap
   # bin/tap: the commands CI and the owner run.
   class CLI
@@ -215,3 +219,5 @@ module Tap
     end
   end
 end
+
+# rubocop:enable Homebrew/SingleUseMethod

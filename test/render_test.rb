@@ -37,7 +37,7 @@ class RenderTest < Minitest::Test
   end
 
   def test_strings_are_escaped_for_ruby
-    formula = Tap::Render.formula(tool(desc: 'Says "hi" for #{x}'), release)
+    formula = Tap::Render.formula(tool(desc: "Says \"hi\" for \#{x}"), release)
     assert_includes formula, 'desc "Says \"hi\" for \#{x}"'
   end
 

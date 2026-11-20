@@ -6,8 +6,6 @@
 class Ship < Formula
   desc "You write the code, ship handles git and GitHub"
   homepage "https://github.com/GregoireF/ship-it"
-  # Explicit: Homebrew would read "64" from archive names like x86_64.
-  version "0.1.2"
   license "Apache-2.0"
 
   livecheck do

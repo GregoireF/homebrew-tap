@@ -6,8 +6,6 @@
 class Kiwa < Formula
   desc "Find any project, run any task: workspace launcher for humans and AI agents"
   homepage "https://github.com/GregoireF/kiwa"
-  # Explicit: Homebrew would read "64" from archive names like x86_64.
-  version "0.1.0"
   license any_of: ["MIT", "Apache-2.0"]
 
   livecheck do

@@ -94,7 +94,7 @@ class CLITest < Minitest::Test
       out = StringIO.new
       assert_equal 0, cli.call(out).run(["sync"])
       assert_includes out.string, "✨ feat(demo): add 0.3.0"
-      assert_includes File.binread(File.join(root, "Formula/demo.rb")), 'version "0.3.0"'
+      assert_includes File.binread(File.join(root, "Formula/demo.rb")), "/releases/download/v0.3.0/"
       assert File.exist?(File.join(root, "bucket/demo.json"))
       assert_includes File.binread(File.join(root, "tools.lock.json")), '"version": "0.3.0"'
       written = File.binread(output).force_encoding(Encoding::UTF_8)

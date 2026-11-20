@@ -6,8 +6,6 @@
 class Addlicense < Formula
   desc "Fast, minimal license header manager for monorepos and CI pipelines"
   homepage "https://github.com/GregoireF/addlicense"
-  # Explicit: Homebrew would read "64" from archive names like x86_64.
-  version "1.0.1"
   license "MIT"
 
   livecheck do

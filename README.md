@@ -42,6 +42,9 @@ brew tap gregoiref/tap
 brew install <tool>
 ```
 
+If Homebrew refuses to load a formula "from untrusted tap gregoiref/tap",
+trust it once: `brew trust --tap gregoiref/tap`.
+
 ### Scoop (Windows)
 
 ```powershell

@@ -6,8 +6,6 @@
 class <%= tool.class_name %> < Formula
   desc <%= q tool.desc %>
   homepage <%= q tool.homepage %>
-  # Explicit: Homebrew would read "64" from archive names like x86_64.
-  version <%= q release.version %>
   license <%= license_dsl %>
 
   livecheck do
