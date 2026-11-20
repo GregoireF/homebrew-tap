@@ -35,23 +35,29 @@ jobs:
       - run: rake
 
   brew:
-    name: brew style and audit
+    # The checks of the `brew tap-new` template (November 2026): test-bot's
+    # tap syntax step runs brew style, brew audit and readall on the tap.
+    # No bottles to build: every formula installs prebuilt archives.
+    name: brew test-bot
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     permissions:
       contents: read
+    defaults:
+      run:
+        shell: bash -xeuo pipefail {0}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
       # Links this checkout as the gregoiref/tap tap.
-      - uses: Homebrew/actions/setup-homebrew@2fc0550883426e204806834287d18a011bdcfff4 # main, 2026-11-12
-      # Homebrew 7 loads formulae of a non-official tap only once trusted; the
-      # tap here is this checkout. Older versions have no `trust` command.
-      - name: trust the tap
-        run: if brew commands | grep -qx trust; then brew trust --tap gregoiref/tap; fi
-      - run: brew style gregoiref/tap
-      - run: brew audit --strict --online --tap gregoiref/tap
+      - uses: Homebrew/actions/setup-homebrew@63a2d4d8d4193eab3e62b1b782ff3ab8408f5b29 # 2026.11.09.1
+      # Homebrew 7 loads formulae of a non-official tap only once trusted
+      # (docs.brew.sh/Tap-Trust); the tap here is this checkout.
+      - run: brew trust --tap gregoiref/tap
+      - run: brew test-bot --only-cleanup-before
+      - run: brew test-bot --only-setup
+      - run: brew test-bot --only-tap-syntax
 
   license:
     name: license headers
