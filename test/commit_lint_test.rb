@@ -25,7 +25,7 @@ class CommitLintTest < Minitest::Test
     assert_match(/subject is 51 characters/, problems("feat: #{"x" * 51}\n").first)
     assert_match(/header is/, problems("✨ feat(a-very-long-scope-name-indeed): #{"x" * 45}\n").first)
     assert_match(/period/, problems("docs: fix typo.\n").first)
-    assert_match(/AI co-author/,
-                 problems("feat: x\n\nCo-authored-by: Claude <noreply@anthropic.com>\n").first)
+    assert_match(/co-author trailer/,
+                 problems("feat: x\n\nCo-authored-by: Someone <someone@example.com>\n").first)
   end
 end

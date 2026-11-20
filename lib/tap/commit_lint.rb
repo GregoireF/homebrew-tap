@@ -9,7 +9,8 @@ module Tap
   module CommitLint
     TYPES = %w[feat fix docs style refactor perf test build ci chore security revert wip].freeze
     HEADER = %r{\A(?:(?<emoji>[^\x00-\x7F]\S*) )?(?<type>[a-z]+)(?:\((?<scope>[\w./-]+)\))?!?: (?<subject>\S.*)\z}
-    AI_TRAILER = /^Co-authored-by: .*(claude|anthropic|copilot|openai)/i
+    # The owner is the only author: no co-author trailer of any kind.
+    CO_AUTHOR = /^Co-authored-by:/i
     HEADER_MAX = 72
     SUBJECT_MAX = 50
     # git's own messages, left alone.
@@ -32,7 +33,7 @@ module Tap
         found << "subject is #{match[:subject].length} characters, at most #{SUBJECT_MAX}"
       end
       found << "subject must not end with a period" if match[:subject].end_with?(".")
-      found << "remove the AI co-author trailer: the owner is the only author" if message.match?(AI_TRAILER)
+      found << "remove the co-author trailer: the owner is the only author" if message.match?(CO_AUTHOR)
       found
     end
   end

@@ -120,7 +120,7 @@ happens with the next stable release of a tool.
 - Man pages, once the tools ship them in their archives.
 ## Outside this repository
 
-- Remove the `Co-Authored-By: Claude` trailers from history in every
+- Remove the AI co-author trailers from history in every
   GregoireF repository except the Go modules (addlicense keeps its tagged
   commits so `sum.golang.org` stays valid). One repository at a time, mirror
   backup first, every rewritten commit re-signed.
