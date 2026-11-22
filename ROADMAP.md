@@ -105,19 +105,42 @@ happens with the next stable release of a tool.
 - [x] Local hooks: `rake` before each commit, header format and no AI
       co-author in the message.
 - [ ] Clean-up: delete workflow runs older than 90 days.
-- [ ] Yearly rotation reminder for `TAP_SIGNING_KEY`.
+- [x] Rotation of both secrets: `secrets.yml`, monthly, issue when due.
+
+## Phase 5: Homebrew 7 conventions, more ways in, hardening ✅ (2026-11-22)
+
+- [x] Architecture: targets as plugins, one class per command
+      ([ADR-0006](docs/adr/0006-targets-as-plugins.md)).
+- [x] `brew tap-new` template conventions: `brew test-bot
+      --only-tap-syntax`, `Homebrew/actions` dated release, macos-26,
+      `brew trust` ([ADR-0005](docs/adr/0005-sync-not-brew-bump.md)).
+- [x] addlicense is `gregoiref-addlicense` in Homebrew (homebrew-core has
+      google/addlicense) ([ADR-0007](docs/adr/0007-gregoiref-addlicense.md)).
+- [x] Rollback: `pin`, `bin/tap rollback` / `unpin`, sync's `rollback` input.
+- [x] Versioned JSON API (`/api/v1`, with its JSON Schema) and shields.io
+      badges per tool.
+- [x] `install.sh`: SHA-256 always, provenance when possible, tested on
+      macOS, Linux and Alpine.
+- [x] Nix flake and aqua registry, both tested with the real tools.
+- [x] Provenance of every published file; harden-runner (audit) in every job;
+      Dependabot security updates.
+- [x] Diátaxis documentation with Mermaid diagrams, page templates, and
+      reference pages generated from the schemas and the CLI.
+- [ ] Badges and install commands in the READMEs of ship-it, kiwa, addlicense.
+- [ ] harden-runner from `audit` to `block`, with the endpoints the audit
+      recorded.
+- [ ] musl builds in `tools.yml` (kiwa publishes x86_64 musl): install.sh
+      and Nix on Alpine.
+- [ ] `flake.lock`: a monthly `nix flake update` with the install tests.
 
 ## Ideas to evaluate
 
 - `ship completion <shell>` in ship-it, then `completions:` in tools.yml.
 - A second binary and `test` arguments detected by `bin/tap add` from the
   archive contents.
-- Nix flake (`nix run github:GregoireF/homebrew-tap#kiwa`) generated from
-  `tools.yml`.
-- mise/aqua registry entries.
-- A shell installer at `gregoiref.github.io/homebrew-tap/install.sh` that
-  checks provenance before it installs.
+- `install.ps1` for Windows machines without Scoop or WinGet.
 - Man pages, once the tools ship them in their archives.
+
 ## Outside this repository
 
 - Remove the AI co-author trailers from history in every

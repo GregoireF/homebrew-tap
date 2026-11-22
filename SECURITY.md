@@ -20,7 +20,11 @@ tool's repository; report it there the same way.
   by a GitHub Actions workflow of the tool's own repository
   (`gh attestation verify`). An archive without one is not published.
 - **No downgrade.** The tap refuses a "latest" release older than the version
-  it serves.
+  it serves; going back is only a deliberate `pin` (`bin/tap rollback`), which
+  goes through every check.
+- **Provenance of what the tap serves.** After each signed commit, sync signs
+  a SLSA provenance of every formula and manifest it published:
+  `gh attestation verify Formula/ship.rb --repo GregoireF/homebrew-tap`.
 - **Tested before it is published.** A new version reaches `main` only after
   real installs pass on macOS, Linux and Windows.
 - **Signed history.** Every commit on `main` is signed and verified by GitHub:
@@ -32,14 +36,20 @@ tool's repository; report it there the same way.
   commits, environment `publish`) and `WINGET_TOKEN` (opens pull requests on
   microsoft/winget-pkgs from the owner's fork, environment `winget`). The
   jobs that read them run no code from a pull request.
-- **Hardened workflows.** Actions are pinned by commit, permissions are
-  declared per job, and every workflow is checked by
-  [zizmor](https://docs.zizmor.sh) and actionlint.
+- **Secrets watched.** A monthly check opens an issue 30 days before
+  `WINGET_TOKEN` expires and when the CI signing key is due for its yearly
+  rotation ([procedure](docs/how-to/rotate-secrets.md)). Secret scanning and
+  push protection are on.
+- **Hardened workflows.** Actions are pinned by commit at versions at least
+  7 days old, permissions are declared per job, every job records its
+  network connections (harden-runner, audit mode), and every workflow is
+  checked by [zizmor](https://docs.zizmor.sh) and actionlint.
   [OpenSSF Scorecard](https://scorecard.dev/viewer/?uri=github.com/GregoireF/homebrew-tap)
-  scores the repository weekly.
+  scores the repository weekly; CodeQL scans the generator and the workflows.
+
+What the tap does not protect against, and why:
+[security model](docs/explanation/security-model.md).
 
 ## Verify a download yourself
 
-```sh
-gh attestation verify <archive> --repo GregoireF/<tool-repository>
-```
+[Verify a download](docs/how-to/verify-a-download.md).

@@ -6,14 +6,16 @@ Instructions for AI coding agents working on **GregoireF/homebrew-tap**
 ## What this repository is
 
 The distribution hub of the GregoireF tools: Homebrew formulae (`Formula/`),
-Scoop manifests (`bucket/`), WinGet manifests (`winget/`) and a catalog site,
-generated from `tools.yml` and `tools.lock.json` by the Ruby generator in
-`lib/tap/`.
+Scoop (`bucket/`), WinGet (`winget/`), Nix (`flake.nix`) and aqua
+(`aqua/registry.yaml`) files, and a site (catalog, API, badges, `install.sh`),
+all generated from `tools.yml` and `tools.lock.json` by the Ruby generator in
+`lib/tap/`: one target module per output (`lib/tap/targets/`).
 
 ## Rules
 
-- **Never edit `Formula/`, `bucket/`, `winget/`, `tools.lock.json` or the
-  generated part of `README.md` by hand.** Change `tools.yml`, `templates/`
+- **Never edit `Formula/`, `bucket/`, `winget/`, `flake.nix`, `aqua/`,
+  `docs/reference/`, `tools.lock.json` or the generated part of `README.md`
+  by hand.** Change `tools.yml`, `templates/`
   or `lib/tap/`, then run `bin/tap render`.
 - A new key in `tools.yml` goes into `lib/tap/config.rb` **and**
   `schema/tools.schema.json` (`test/schema_test.rb` fails otherwise).
@@ -43,12 +45,15 @@ bin/tap render           # regenerate the files from tools.yml + lock
 bin/tap sync             # network: fetch and verify the latest releases
 bin/tap add OWNER/REPO   # network: append an inferred tools.yml entry
 bin/tap health           # network: stale tools, provenance problems
-bin/tap site _site       # the catalog site
+bin/tap site _site       # the catalog site, API, badges, install.sh
+rake brew                # brew style + audit in Docker, current and latest Homebrew
 git config core.hooksPath .githooks   # once per clone: rake + header check
 ```
 
-`brew style` and `brew audit` need Homebrew; on Windows use Docker:
-`docker run --rm -v "$PWD:/src:ro" homebrew/brew` (see `docs/adding-a-tool.md`).
+Shell scripts are POSIX `sh` and pass shellcheck; end-to-end scripts are
+`test/installer.sh` and `test/aqua.sh`. Every check outside Ruby:
+`docs/how-to/work-on-the-tap.md`. Docs follow Diátaxis; new pages start from
+`docs/templates/`.
 
 ## Commits
 
@@ -60,6 +65,8 @@ git config core.hooksPath .githooks   # once per clone: rake + header check
 
 ## Workflows
 
-Actions are pinned by full commit SHA with the version in a comment. Every
+Actions are pinned by full commit SHA with the version in a comment, at a
+release at least 7 days old. Every job starts with harden-runner (egress
+audit) on Linux. Every
 job declares its own `permissions`; `actions/checkout` uses
 `persist-credentials: false`. `actionlint` and `zizmor` must stay clean.

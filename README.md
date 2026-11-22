@@ -4,16 +4,15 @@
 [![Install tests](https://github.com/GregoireF/homebrew-tap/actions/workflows/install-test.yml/badge.svg)](https://github.com/GregoireF/homebrew-tap/actions/workflows/install-test.yml)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/GregoireF/homebrew-tap/badge)](https://scorecard.dev/viewer/?uri=github.com/GregoireF/homebrew-tap)
 
-Homebrew formulae (macOS and Linux), a Scoop bucket and WinGet manifests
-(Windows) for the command-line tools of [GregoireF](https://github.com/GregoireF),
-from one repository. Catalog: **[gregoiref.github.io/homebrew-tap](https://gregoiref.github.io/homebrew-tap/)**
-([Atom feed](https://gregoiref.github.io/homebrew-tap/feed.xml) of new versions).
+The command-line tools of [GregoireF](https://github.com/GregoireF) for
+Homebrew, Scoop, WinGet, Nix, aqua and a plain `install.sh`, from one
+repository. Every version here had its archives checked against their
+checksums and signed build provenance, and was installed and run on macOS,
+Linux and Windows, before it was published.
 
-Every version listed here was installed and tested on macOS, Linux and
-Windows before it was published, and its archives were checked against the
-release's checksums and, where the tool provides one, its signed SLSA build
-provenance. Shell completions (bash, zsh, fish) come with the formulae of
-the tools that provide them.
+**Catalog:** [gregoiref.github.io/homebrew-tap](https://gregoiref.github.io/homebrew-tap/) ·
+[Atom feed](https://gregoiref.github.io/homebrew-tap/feed.xml) ·
+[JSON API](https://gregoiref.github.io/homebrew-tap/api/v1/tools.json)
 
 ## Tools
 
@@ -29,90 +28,75 @@ the tools that provide them.
 
 ## Install
 
-### Homebrew (macOS, Linux)
+| | |
+| --- | --- |
+| **Homebrew** (macOS, Linux) | `brew install gregoiref/tap/<formula>` |
+| **Scoop** (Windows) | `scoop bucket add gregoiref https://github.com/GregoireF/homebrew-tap` then `scoop install gregoiref/<tool>` |
+| **WinGet** (Windows) | `winget install --id GregoireF.<tool> --exact`, once winget-pkgs has merged the version |
+| **Nix** | `nix run github:GregoireF/homebrew-tap#<tool>` |
+| **aqua** | the [registry](aqua/registry.yaml): see [package managers](docs/explanation/package-managers.md#aqua) |
+| **mise** | `mise use github:GregoireF/<repository>` |
+| **No package manager** (macOS, Linux) | `curl -fsSL https://gregoiref.github.io/homebrew-tap/install.sh \| sh -s -- <tool>` |
+
+Homebrew 6 and later load a non-official tap only once trusted. Installing
+by full name trusts that formula; for short names or a `Brewfile`:
 
 ```sh
-brew install gregoiref/tap/<tool>
+brew tap gregoiref/tap && brew trust --formula gregoiref/tap/kiwa && brew install kiwa
 ```
 
-or add the tap once, then use short names:
+```ruby
+tap "gregoiref/tap", trusted: { formulae: ["kiwa", "ship"] }
+brew "gregoiref/tap/kiwa"
+```
+
+New here? [Install your first tool](docs/tutorials/install-your-first-tool.md)
+walks through it, checks included.
+
+> **addlicense** is `gregoiref-addlicense` in Homebrew: homebrew-core's
+> `addlicense` is [google/addlicense](https://github.com/google/addlicense),
+> another tool ([why](docs/adr/0007-gregoiref-addlicense.md)). The old name
+> still resolves. If you had the old cask:
+> `brew uninstall --cask addlicense && brew install gregoiref/tap/gregoiref-addlicense`.
+
+## Verify
 
 ```sh
-brew tap gregoiref/tap
-brew install <tool>
+gh attestation verify ship_0.1.2_linux_amd64.tar.gz --repo GregoireF/ship-it   # the archive
+gh attestation verify Formula/ship.rb --repo GregoireF/homebrew-tap             # the formula
 ```
 
-If Homebrew refuses to load a formula "from untrusted tap gregoiref/tap",
-trust it once: `brew trust --tap gregoiref/tap`.
+More in [Verify a download](docs/how-to/verify-a-download.md) and the
+[security model](docs/explanation/security-model.md).
 
-### Scoop (Windows)
+## How it works
 
-```powershell
-scoop bucket add gregoiref https://github.com/GregoireF/homebrew-tap
-scoop install gregoiref/<tool>
+Nobody edits what this repository serves. [`tools.yml`](tools.yml) says how
+to package each tool; every 30 minutes `sync.yml` looks for new stable
+releases, verifies them, writes every package manager's files, installs
+them on 13 runners, then commits them, signed, straight to `main`.
+
+```mermaid
+flowchart LR
+    R["tool release<br/>archives + checksums<br/>+ SLSA provenance"] --> V["verify<br/>SHA-256, provenance"]
+    V --> G["generate<br/>brew, scoop, winget,<br/>nix, aqua, install.sh"]
+    G --> T["install tests<br/>macOS, Linux, Windows"]
+    T --> C["signed commit<br/>+ provenance"]
+    C --> P["catalog, API, badges,<br/>WinGet pull request"]
 ```
 
-### WinGet (Windows)
+Nightly, every published version is reinstalled and its provenance checked
+again; a problem opens an issue that closes itself once fixed. A tool joins
+by getting the `gregoiref-tap` topic. Details:
+[how publishing works](docs/explanation/how-publishing-works.md),
+[ARCHITECTURE.md](ARCHITECTURE.md), [ROADMAP.md](ROADMAP.md), and the rest of
+the [documentation](docs/).
 
-```powershell
-winget install --id GregoireF.<tool> --exact
-```
-
-The tap submits each version to [microsoft/winget-pkgs](https://github.com/microsoft/winget-pkgs);
-it becomes installable once WinGet's moderators merge it.
-
-### Upgrade
-
-```sh
-brew upgrade            # Homebrew
-scoop update '*'        # Scoop
-winget upgrade --all    # WinGet
-```
-
-## Verify a download yourself
-
-Tools marked "SLSA provenance" publish a signed build attestation for every
-archive. With the [GitHub CLI](https://cli.github.com/):
-
-```sh
-gh release download v0.1.2 --repo GregoireF/ship-it --pattern 'ship_0.1.2_linux_amd64.tar.gz'
-gh attestation verify ship_0.1.2_linux_amd64.tar.gz --repo GregoireF/ship-it
-```
-
-## addlicense is `gregoiref-addlicense` in Homebrew
-
-homebrew-core has its own `addlicense` formula, for
-[google/addlicense](https://github.com/google/addlicense), a different
-tool. This tap's formula is therefore named `gregoiref-addlicense`; the
-command it installs is still `addlicense`, so the two formulae cannot be
-installed together. The old name `gregoiref/tap/addlicense` still resolves
-to the new one.
-
-addlicense also used to be a cask, which macOS quarantines (the unsigned
-binary could refuse to start). If you installed the cask:
-
-```sh
-brew uninstall --cask addlicense
-brew install gregoiref/tap/gregoiref-addlicense
-```
-
-## How this tap works
-
-Nobody edits the files under `Formula/`, `bucket/` and `winget/`.
-[`tools.yml`](tools.yml) describes each tool; every 30 minutes a workflow
-looks for new stable releases (and for new tools: a GregoireF repository
-with the `gregoiref-tap` topic joins on its own), verifies their archives,
-writes the formula and the manifests, installs them on every platform, and
-only then commits the result to `main`, publishes the catalog and submits
-the WinGet manifests. Each night it reinstalls everything and checks the
-health of what it serves. See [ARCHITECTURE.md](ARCHITECTURE.md) and the
-[roadmap](ROADMAP.md).
-
-Found a problem with an install? [Open an issue](https://github.com/GregoireF/homebrew-tap/issues/new/choose).
+An install problem? [Open an issue](https://github.com/GregoireF/homebrew-tap/issues/new/choose).
 A bug in a tool itself belongs to that tool's repository.
 
 ## License
 
-The packaging files in this repository are available under the
-[MIT](LICENSE-MIT) or [Apache-2.0](LICENSE-APACHE) license, at your option.
-Each tool has its own license, listed in its formula.
+The packaging files here are available under the [MIT](LICENSE-MIT) or
+[Apache-2.0](LICENSE-APACHE) license, at your option. Each tool has its own
+license, listed in its formula and in the [API](docs/reference/api.md).
