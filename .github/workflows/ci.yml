@@ -121,6 +121,15 @@ jobs:
           persist-credentials: false
       - name: actionlint
         run: docker run --rm -v "$PWD:/repo" --workdir /repo rhysd/actionlint:1.7.12 -color
+      - uses: ruby/setup-ruby@b3aaceaef7e0ee231b499e7b5f49c03fc1d32199 # v1.338.0
+        with:
+          ruby-version: "3.4"
+      # POSIX sh: the generated install.sh and the scripts of the repository.
+      - name: shellcheck
+        run: |
+          bin/tap site _site
+          docker run --rm -v "$PWD:/repo:ro" --workdir /repo koalaman/shellcheck:v0.11.0 --shell=sh \
+            _site/install.sh test/installer.sh .githooks/pre-commit .githooks/commit-msg
       - uses: zizmorcore/zizmor-action@45d7276c9ca790aabd705e31ca99c6185c3e76dd # v0.8.1
         with:
           advanced-security: false
