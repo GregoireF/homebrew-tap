@@ -37,6 +37,11 @@ jobs:
     permissions:
       contents: read
     steps:
+      - name: harden runner (egress audit)
+        if: runner.os == 'Linux'
+        uses: step-security/harden-runner@1d88384fd173af6ecb012dfd0264a306b711241a # v2.22.4
+        with:
+          egress-policy: audit
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
@@ -78,6 +83,11 @@ jobs:
     permissions:
       contents: read
     steps:
+      - name: harden runner (egress audit)
+        if: runner.os == 'Linux'
+        uses: step-security/harden-runner@1d88384fd173af6ecb012dfd0264a306b711241a # v2.22.4
+        with:
+          egress-policy: audit
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
@@ -108,6 +118,11 @@ jobs:
     permissions:
       contents: read
     steps:
+      - name: harden runner (egress audit)
+        if: runner.os == 'Linux'
+        uses: step-security/harden-runner@1d88384fd173af6ecb012dfd0264a306b711241a # v2.22.4
+        with:
+          egress-policy: audit
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
@@ -143,6 +158,11 @@ jobs:
     permissions:
       contents: read
     steps:
+      - name: harden runner (egress audit)
+        if: runner.os == 'Linux'
+        uses: step-security/harden-runner@1d88384fd173af6ecb012dfd0264a306b711241a # v2.22.4
+        with:
+          egress-policy: audit
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
@@ -182,6 +202,11 @@ jobs:
       run:
         shell: pwsh
     steps:
+      - name: harden runner (egress audit)
+        if: runner.os == 'Linux'
+        uses: step-security/harden-runner@1d88384fd173af6ecb012dfd0264a306b711241a # v2.22.4
+        with:
+          egress-policy: audit
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
@@ -242,6 +267,11 @@ jobs:
     outputs:
       report: ${{ steps.health.outputs.report }}
     steps:
+      - name: harden runner (egress audit)
+        if: runner.os == 'Linux'
+        uses: step-security/harden-runner@1d88384fd173af6ecb012dfd0264a306b711241a # v2.22.4
+        with:
+          egress-policy: audit
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
@@ -266,6 +296,11 @@ jobs:
     permissions:
       issues: write
     steps:
+      - name: harden runner (egress audit)
+        if: runner.os == 'Linux'
+        uses: step-security/harden-runner@1d88384fd173af6ecb012dfd0264a306b711241a # v2.22.4
+        with:
+          egress-policy: audit
       - env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
