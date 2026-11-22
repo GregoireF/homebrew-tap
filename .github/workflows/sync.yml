@@ -87,6 +87,7 @@ jobs:
             Formula/
             bucket/
             winget/
+            flake.nix
             README.md
             tools.yml
             tools.lock.json
@@ -149,7 +150,7 @@ jobs:
           git config commit.gpgsign true
 
           # -A: render also deletes files (an old WinGet version).
-          git add -A Formula bucket winget README.md tools.yml tools.lock.json
+          git add -A Formula bucket winget flake.nix README.md tools.yml tools.lock.json
           if git diff --cached --quiet; then
             echo "nothing to commit"
             exit 0

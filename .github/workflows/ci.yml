@@ -76,7 +76,7 @@ jobs:
           # Formula/ and bucket/ are generated; JSON and Markdown take no header.
           args: >-
             --check --template .github/license-header.txt
-            --ignore "Formula,bucket,winget,test/golden,templates,*.md,*.json,LICENSE-*,.gitattributes,.gitignore,.github/license-header.txt"
+            --ignore "Formula,bucket,winget,flake.nix,test/golden,templates,*.md,*.json,LICENSE-*,.gitattributes,.gitignore,.github/license-header.txt"
             .
 
   title:

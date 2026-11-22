@@ -96,6 +96,36 @@ jobs:
           docker run --rm -v "$PWD:/w:ro" -w /w alpine:3.22
           sh -c 'apk add -q curl xz && sh test/installer.sh _site/install.sh'
 
+  # flake.nix: every package built and run, on Linux and macOS.
+  nix:
+    name: nix ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-26]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - if: inputs.artifact != ''
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: ${{ inputs.artifact }}
+      - uses: cachix/install-nix-action@3dc140bfc76c49fbd4dd958429132e3746bcb086 # v31.11.5
+      - name: build and run every package
+        run: |
+          set -euo pipefail
+          nix flake check --all-systems --no-build "path:$PWD"
+          for tool in $(nix eval --raw "path:$PWD#packages.x86_64-linux" --apply 'p: builtins.concatStringsSep " " (builtins.attrNames p)'); do
+            echo "::group::$tool"
+            nix run "path:$PWD#$tool" -- --version || nix run "path:$PWD#$tool" -- version
+            echo "::endgroup::"
+          done
+
   scoop:
     name: scoop ${{ matrix.os }}
     strategy:
@@ -188,7 +218,7 @@ jobs:
     # Not when sync calls this workflow on a candidate (its event is also
     # `schedule`): only main's own nightly run reports.
     if: always() && github.event_name == 'schedule' && inputs.artifact == ''
-    needs: [homebrew, installer, scoop, health]
+    needs: [homebrew, installer, nix, scoop, health]
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     permissions:
@@ -199,7 +229,7 @@ jobs:
           GH_REPO: ${{ github.repository }}
           INSTALL_FAILED: >-
             ${{ needs.homebrew.result == 'failure' || needs.installer.result == 'failure' ||
-            needs.scoop.result == 'failure' }}
+            needs.nix.result == 'failure' || needs.scoop.result == 'failure' }}
           HEALTH_FAILED: ${{ needs.health.result == 'failure' }}
           HEALTH_REPORT: ${{ needs.health.outputs.report }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
