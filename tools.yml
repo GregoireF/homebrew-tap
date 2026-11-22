@@ -4,8 +4,10 @@
 # Source of truth of the tap: one entry per tool. `bin/tap sync` reads the
 # latest stable GitHub release of each `repo`, checks its archives, records
 # them in tools.lock.json, and `bin/tap render` writes Formula/, bucket/,
-# winget/ and the README from this file and the lock. `bin/tap add <repo>`
-# writes a new entry from a release. See docs/adding-a-tool.md.
+# winget/, flake.nix, aqua/, the README table and docs/reference/ from this
+# file and the lock. `bin/tap add <repo>` writes a new entry from a release.
+# See docs/how-to/add-a-tool.md and
+# docs/reference/tools-yml.md (generated from schema/tools.schema.json).
 #
 # Keys
 #   repo         GitHub repository that publishes the releases.
