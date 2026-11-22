@@ -48,7 +48,7 @@ module Tap
 
     def lock = @lock ||= Lock.load(path("tools.lock.json"))
 
-    def catalog = Catalog.new(tools:, lock:, readme: read("README.md") || "")
+    def catalog(status: {}) = Catalog.new(tools:, lock:, readme: read("README.md") || "", status:)
 
     # Relative paths that exist under the globs of `targets`.
     def existing(targets)

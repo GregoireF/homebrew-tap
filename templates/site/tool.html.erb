@@ -34,3 +34,7 @@ gh attestation verify <%= h release.assets["linux_amd64"]["name"] %> --repo <%= 
 <p>This tool does not publish a build provenance yet; the tap checks each archive against the release's <code><%= h tool.checksums %></code>:</p>
 <pre>sha256sum --ignore-missing -c <%= h tool.checksums %></pre>
 <% end -%>
+
+<h2>For scripts and READMEs</h2>
+<p>JSON: <a href="../api/v1/tools/<%= h tool.name %>.json">api/v1/tools/<%= h tool.name %>.json</a> (<a href="../api/v1/schema.json">schema</a>). Badges, kept up to date by the tap:</p>
+<pre><%= h badges %></pre>

@@ -17,11 +17,22 @@ module Tap
       end
     end
 
-    # `site DIR`: every site target, written into DIR (the Pages artifact).
+    # `site DIR [--install-tests passing|failing]`: every site target, written
+    # into DIR (the Pages artifact). The workflow passes the last nightly
+    # install test's result, which the badges show.
     class Site < Base
+      STATES = %w[passing failing].freeze
+
       def call(args)
-        dir = arg(args, 0, "site DIR")
-        Targets.files(Targets.site, ws.catalog).each do |rel, content|
+        dir = arg(args, 0, "site DIR [--install-tests passing|failing]")
+        status = {}
+        if (i = args.index("--install-tests"))
+          state = arg(args, i + 1, "site DIR --install-tests passing|failing")
+          raise Error, "--install-tests: expected #{STATES.join(" or ")}, got #{state}" unless STATES.include?(state)
+
+          status["install_tests"] = state
+        end
+        Targets.files(Targets.site, ws.catalog(status:)).each do |rel, content|
           full = File.join(dir, rel)
           FileUtils.mkdir_p(File.dirname(full))
           File.binwrite(full, content)

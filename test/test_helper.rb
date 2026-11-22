@@ -53,7 +53,7 @@ module TestHelpers
     Tap::Release.new(tag: "v#{version}", version:, verified: tool.verify, assets:, published: nil)
   end
 
-  def catalog(tools, lock, readme: "") = Tap::Catalog.new(tools:, lock:, readme:)
+  def catalog(tools, lock, readme: "", status: {}) = Tap::Catalog.new(tools:, lock:, readme:, status:)
 
   # Every committed file the repository targets produce for these inputs.
   def repository_files(tools, lock, readme:)

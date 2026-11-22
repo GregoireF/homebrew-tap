@@ -13,7 +13,12 @@ on:
       - tools.yml
       - tools.lock.json
       - templates/site/**
-      - lib/tap/site.rb
+      - schema/api.schema.json
+      - lib/tap/targets/**
+  # After the nightly install test (04:17), so the install-tests badges
+  # show its result.
+  schedule:
+    - cron: "47 5 * * *"
   workflow_dispatch:
   workflow_call:
 
@@ -29,6 +34,7 @@ jobs:
     timeout-minutes: 5
     permissions:
       contents: read
+      actions: read # the last install-test run's conclusion, for the badges
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -37,7 +43,19 @@ jobs:
       - uses: ruby/setup-ruby@b3aaceaef7e0ee231b499e7b5f49c03fc1d32199 # v1.338.0
         with:
           ruby-version: "3.4"
-      - run: bin/tap site _site
+      - name: build the site
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          conclusion="$(gh run list --workflow install-test.yml --branch main --status completed --limit 1 \
+            --json conclusion --jq '.[0].conclusion // empty')"
+          case "$conclusion" in
+            success) bin/tap site _site --install-tests passing ;;
+            failure) bin/tap site _site --install-tests failing ;;
+            *) bin/tap site _site ;;
+          esac
       - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         with:
           path: _site

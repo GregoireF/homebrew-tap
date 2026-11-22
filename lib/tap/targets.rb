@@ -22,7 +22,7 @@ module Tap
 
     def repository = [Homebrew, Scoop, Winget, Readme]
 
-    def site = [Pages]
+    def site = [Pages, Api, Badges]
 
     def files(targets, catalog)
       targets.each_with_object({}) { |target, out| out.merge!(target.files(catalog)) }

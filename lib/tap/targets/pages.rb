@@ -24,7 +24,8 @@ module Tap
         served = catalog.served
         out = { "index.html" => page("Tools", INDEX, "", served:) }
         served.each do |tool, release|
-          out["#{tool.name}/index.html"] = page(tool.name, TOOL, "../", tool:, release:)
+          out["#{tool.name}/index.html"] = page(tool.name, TOOL, "../", tool:, release:,
+                                                badges: Badges.markdown(tool))
         end
         out["feed.xml"] = feed(served)
         out[".nojekyll"] = ""
