@@ -20,7 +20,7 @@ module Tap
 
     module_function
 
-    def repository = [Homebrew, Scoop, Winget, Nix, Aqua, Readme]
+    def repository = [Homebrew, Scoop, Winget, Nix, Aqua, Readme, Docs]
 
     def site = [Pages, Api, Badges, Installer]
 
