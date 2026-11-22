@@ -75,6 +75,10 @@
           "minItems": 1,
           "description": "Arguments that make the first binary print a completion script; the shell's name is appended."
         },
+        "nested": {
+          "type": "boolean",
+          "description": "The macOS and Linux archives wrap their files in one directory named after the archive (cargo-dist does)."
+        },
         "pin": {
           "type": "string",
           "pattern": "^\\d+(?:\\.\\d+)*(?:[-+][0-9A-Za-z.-]+)?$",

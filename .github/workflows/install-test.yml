@@ -126,6 +126,48 @@ jobs:
             echo "::endgroup::"
           done
 
+  # aqua/registry.yaml with aqua itself (pinned, checked against its
+  # checksums), at the versions the lock serves.
+  aqua:
+    name: aqua ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-24.04
+            platform: linux_amd64
+          - os: macos-26
+            platform: darwin_arm64
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - if: inputs.artifact != ''
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: ${{ inputs.artifact }}
+      - uses: ruby/setup-ruby@b3aaceaef7e0ee231b499e7b5f49c03fc1d32199 # v1.338.0
+        with:
+          ruby-version: "3.4"
+      - name: install aqua
+        env:
+          AQUA_VERSION: "2.66.1" # pin: aqua
+          PLATFORM: ${{ matrix.platform }}
+        run: |
+          set -euo pipefail
+          base="https://github.com/aquaproj/aqua/releases/download/v${AQUA_VERSION}"
+          cd "$RUNNER_TEMP"
+          curl -fsSLO "$base/aqua_${PLATFORM}.tar.gz"
+          curl -fsSLO "$base/aqua_${AQUA_VERSION}_checksums.txt"
+          grep " aqua_${PLATFORM}.tar.gz\$" "aqua_${AQUA_VERSION}_checksums.txt" | shasum -a 256 -c -
+          mkdir -p bin && tar -xzf "aqua_${PLATFORM}.tar.gz" -C bin aqua
+          echo "$RUNNER_TEMP/bin" >> "$GITHUB_PATH"
+      - run: sh test/aqua.sh
+
   scoop:
     name: scoop ${{ matrix.os }}
     strategy:
@@ -218,7 +260,7 @@ jobs:
     # Not when sync calls this workflow on a candidate (its event is also
     # `schedule`): only main's own nightly run reports.
     if: always() && github.event_name == 'schedule' && inputs.artifact == ''
-    needs: [homebrew, installer, nix, scoop, health]
+    needs: [homebrew, installer, nix, aqua, scoop, health]
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     permissions:
@@ -229,7 +271,7 @@ jobs:
           GH_REPO: ${{ github.repository }}
           INSTALL_FAILED: >-
             ${{ needs.homebrew.result == 'failure' || needs.installer.result == 'failure' ||
-            needs.nix.result == 'failure' || needs.scoop.result == 'failure' }}
+            needs.nix.result == 'failure' || needs.aqua.result == 'failure' || needs.scoop.result == 'failure' }}
           HEALTH_FAILED: ${{ needs.health.result == 'failure' }}
           HEALTH_REPORT: ${{ needs.health.outputs.report }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}

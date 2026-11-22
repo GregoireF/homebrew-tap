@@ -73,6 +73,7 @@ class TargetsTest < Minitest::Test
   def test_tools_without_a_release_are_skipped
     files = repository_files([tool], Tap::Lock.new("x", {}),
                              readme: "#{Tap::Targets::Readme::START}\n#{Tap::Targets::Readme::STOP}\n")
-    assert_equal ["README.md"], files.keys
+    # The aqua registry is templated on the version: it needs no release.
+    assert_equal ["README.md", "aqua/registry.yaml"], files.keys.sort
   end
 end

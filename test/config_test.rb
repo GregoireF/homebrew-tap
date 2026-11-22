@@ -96,6 +96,12 @@ class ConfigTest < Minitest::Test
     assert_config_error(/conflicts: not formula names: Bad/) { build(conflicts: ["Bad"]) }
   end
 
+  def test_optional_nested
+    assert build(nested: true).nested
+    refute build.nested
+    assert_config_error(/nested: expected true or false/) { build(nested: "yes") }
+  end
+
   def test_unknown_top_level_keys
     Dir.mktmpdir do |dir|
       path = File.join(dir, "tools.yml")
