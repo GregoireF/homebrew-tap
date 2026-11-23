@@ -50,8 +50,10 @@ rake brew                # brew style + audit in Docker, current and latest Home
 git config core.hooksPath .githooks   # once per clone: rake + header check
 ```
 
-Shell scripts are POSIX `sh` and pass shellcheck; end-to-end scripts are
-`test/installer.sh` and `test/aqua.sh`. Every check outside Ruby:
+`install.sh` and the git hooks are POSIX `sh`; the end-to-end scripts
+`test/installer.sh` and `test/aqua.sh` are bash, held to `brew style`
+(shellcheck `--enable=all`, braces on every variable, `[[ ]]`, `.shellcheckrc`;
+shfmt puts `then` and `do` on their own line). Every check outside Ruby:
 `docs/how-to/work-on-the-tap.md`. Docs follow Diátaxis; new pages start from
 `docs/templates/`.
 

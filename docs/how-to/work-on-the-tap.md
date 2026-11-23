@@ -33,9 +33,9 @@ flowchart LR
 | What | Command |
 | --- | --- |
 | Workflows | `docker run --rm -v "$PWD:/repo" -w /repo rhysd/actionlint:1.7.12` and `ghcr.io/zizmorcore/zizmor --offline .` |
-| Shell scripts | `bin/tap site _site`, then `koalaman/shellcheck:v0.11.0 --shell=sh _site/install.sh test/*.sh` |
-| install.sh end to end | `sh test/installer.sh _site/install.sh` (Linux, macOS, Alpine) |
-| aqua registry | `sh test/aqua.sh` (needs aqua) |
+| Shell scripts | `bin/tap site _site`, then `koalaman/shellcheck:v0.11.0 --shell=sh _site/install.sh` and `--shell=bash --enable=all test/*.sh` |
+| install.sh end to end | `bash test/installer.sh _site/install.sh` (Linux, macOS, Alpine) |
+| aqua registry | `bash test/aqua.sh` (needs aqua) |
 | Nix flake | `nix flake check --all-systems --no-build path:$PWD` |
 | WinGet manifests | `winget validate --manifest winget/manifests/g/GregoireF/<tool>/<version>` |
 

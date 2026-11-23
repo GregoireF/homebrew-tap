@@ -99,12 +99,12 @@ jobs:
         with:
           ruby-version: "3.4"
       - run: bin/tap site _site
-      - run: sh test/installer.sh _site/install.sh
+      - run: bash test/installer.sh _site/install.sh
       # musl: static builds must install, glibc-only ones be refused cleanly.
       - if: runner.os == 'Linux'
         run: >-
           docker run --rm -v "$PWD:/w:ro" -w /w alpine:3.22
-          sh -c 'apk add -q curl xz && sh test/installer.sh _site/install.sh'
+          sh -c 'apk add -q bash curl xz && bash test/installer.sh _site/install.sh'
 
   # flake.nix: every package built and run, on Linux and macOS.
   nix:
@@ -186,7 +186,7 @@ jobs:
           grep " aqua_${PLATFORM}.tar.gz\$" "aqua_${AQUA_VERSION}_checksums.txt" | shasum -a 256 -c -
           mkdir -p bin && tar -xzf "aqua_${PLATFORM}.tar.gz" -C bin aqua
           echo "$RUNNER_TEMP/bin" >> "$GITHUB_PATH"
-      - run: sh test/aqua.sh
+      - run: bash test/aqua.sh
 
   scoop:
     name: scoop ${{ matrix.os }}

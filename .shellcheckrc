@@ -1,0 +1,12 @@
+# SPDX-License-Identifier: MIT OR Apache-2.0
+#
+# `brew style` (and `brew test-bot --only-tap-syntax`) runs shellcheck on this
+# tap's *.sh files with --shell=bash --enable=all. These are the exceptions
+# Homebrew's own .shellcheckrc makes, which shellcheck does not find for a tap
+# checked out outside the Homebrew repository (as in CI).
+
+# Functions used as `if` conditions or in $(...): we use their status.
+disable=SC2310
+disable=SC2311
+# $(command) for its output only.
+disable=SC2312
