@@ -43,7 +43,8 @@ module Tap
       # A pin is how a rollback is written: going back is its purpose.
       refuse_downgrade(tool, current, version) unless tool.pin
 
-      @log.puts "#{tool.name}: #{current&.version || "none"} -> #{version}"
+      from = current&.version || "none"
+      @log.puts "#{tool.name}: #{from} -> #{version}"
       @lock[tool.name] = fetch_release(tool, latest, version)
       Update.new(tool: tool.name, from: current&.version, to: version)
     end

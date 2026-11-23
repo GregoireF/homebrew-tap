@@ -29,6 +29,7 @@ module Tap
         tool = schema("tools.schema.json").dig("$defs", "tool")
         required = tool.fetch("required")
         rows = tool.fetch("properties").map { |key, spec| row(key, required, spec) }
+        platforms = PLATFORMS.map { |p| "`#{p}`" }.join(", ")
         <<~MD
           #{HEADER.chomp}
           # `tools.yml` keys
@@ -44,7 +45,7 @@ module Tap
           | --- | --- | --- | --- |
           #{rows.join("\n")}
 
-          Platforms of `assets`: #{PLATFORMS.map { |p| "`#{p}`" }.join(", ")}.
+          Platforms of `assets`: #{platforms}.
         MD
       end
 
@@ -89,7 +90,8 @@ module Tap
       end
 
       def row(key, required, spec)
-        "| `#{key}` | #{required.include?(key) ? "yes" : "no"} | #{type(spec)} | #{cell(spec["description"])} |"
+        needed = required.include?(key) ? "yes" : "no"
+        "| `#{key}` | #{needed} | #{type(spec)} | #{cell(spec["description"])} |"
       end
 
       def type(spec)

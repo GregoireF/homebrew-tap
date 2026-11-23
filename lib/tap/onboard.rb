@@ -53,7 +53,8 @@ module Tap
         "verify"    => verify_level(repo, latest, checksums, assets["linux_amd64"]),
         "checksums" => checksums,
       }
-      entry["winget"] = "#{repo.split("/").first}.#{binary}" if @publisher
+      owner = repo.split("/").first
+      entry["winget"] = "#{owner}.#{binary}" if @publisher
       entry["assets"] = assets.transform_values { |name| name.gsub(version, "{version}") }
       Config.build(binary, entry, "tools.yml", publisher: @publisher) # same rules as the file
       [binary, entry]
@@ -64,7 +65,9 @@ module Tap
       lines = ["", "  #{name}:"]
       entry.each do |key, value|
         case value
-        when Array then lines << "    #{key}: [#{value.map { |v| scalar(v) }.join(", ")}]"
+        when Array
+          list = value.map { |v| scalar(v) }.join(", ")
+          lines << "    #{key}: [#{list}]"
         when Hash
           lines << "    #{key}:"
           value.each { |k, v| lines << "      #{k}: #{scalar(v)}" }
@@ -84,7 +87,8 @@ module Tap
 
     def pick(repo, platform, names)
       os, arch = platform.split("_")
-      ext = (os == "windows") ? WINDOWS_ARCHIVE : UNIX_ARCHIVE
+      windows = os == "windows"
+      ext = windows ? WINDOWS_ARCHIVE : UNIX_ARCHIVE
       found = names.select { |n| n.match?(ext) && n.match?(OS.fetch(os)) && n.match?(ARCH.fetch(arch)) }
       # glibc over musl, then the shortest name (no "-debug", "-full" variants).
       found = found.reject { |n| n.include?("musl") } if found.size > 1

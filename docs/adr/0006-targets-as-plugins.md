@@ -17,7 +17,7 @@ module Tap
   module Targets
     module Example
       GLOBS = %w[example/*.json].freeze # paths it owns
-      def self.files(catalog) = { "example/kiwa.json" => "…" }
+      def self.files(_catalog) = { "example/kiwa.json" => "…" }
     end
   end
 end

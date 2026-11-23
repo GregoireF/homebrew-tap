@@ -27,7 +27,8 @@ class NixTest < Minitest::Test
     out = flake
     Tap::Targets::Nix::UNIX.each do |platform|
       assert_includes out, "            #{platform} = {\n"
-      assert_includes out, "hash = \"#{Tap::Targets::Nix.sri(Digest::SHA256.hexdigest(platform))}\";"
+      sri = Tap::Targets::Nix.sri(Digest::SHA256.hexdigest(platform))
+      assert_includes out, "hash = \"#{sri}\";"
     end
     refute_includes out, "windows"
     assert_includes out, "        demo = {\n"

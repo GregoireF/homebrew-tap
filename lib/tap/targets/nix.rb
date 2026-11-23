@@ -28,11 +28,15 @@ module Tap
 
       # A Nix string literal: ", \ and ${ escaped.
       def string(text)
-        "\"#{text.to_s.gsub("\\", "\\\\\\\\").gsub('"', '\\"').gsub("${", "\\${")}\""
+        escaped = text.to_s.gsub("\\", "\\\\\\\\").gsub('"', '\\"').gsub("${", "\\${")
+        "\"#{escaped}\""
       end
 
       # The SRI form Nix wants for a hex SHA-256.
-      def sri(hex) = "sha256-#{[[hex].pack("H*")].pack("m0")}"
+      def sri(hex)
+        digest = [hex].pack("H*")
+        "sha256-#{[digest].pack("m0")}"
+      end
     end
   end
 end

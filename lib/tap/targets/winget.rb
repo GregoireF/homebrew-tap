@@ -61,12 +61,15 @@ module Tap
           body << "- RelativeFilePath: #{scalar("#{binary}.exe")}\n"
           body << "  PortableCommandAlias: #{scalar(binary)}\n"
         end
-        body << "ReleaseDate: #{release.published[0, 10]}\n" if release.published
+        published = release.published
+        body << "ReleaseDate: #{published[0, 10]}\n" if published
         body << "Installers:\n"
         ARCHITECTURES.each do |arch, platform|
+          url = release.url(tool, platform)
+          sha = release.sha256(platform).upcase
           body << "- Architecture: #{arch}\n"
-          body << "  InstallerUrl: #{scalar(release.url(tool, platform))}\n"
-          body << "  InstallerSha256: #{release.sha256(platform).upcase}\n"
+          body << "  InstallerUrl: #{scalar(url)}\n"
+          body << "  InstallerSha256: #{sha}\n"
         end
         document("installer", lines, body)
       end

@@ -31,7 +31,8 @@ module Tap
 
         # A Ruby string literal (the formulae are Ruby).
         def q(text)
-          %Q("#{text.gsub("\\", "\\\\\\\\").gsub('"', '\\"').gsub("#", "\\#")}")
+          escaped = text.gsub("\\", "\\\\\\\\").gsub('"', '\\"').gsub("#", "\\#")
+          %Q("#{escaped}")
         end
 
         def license_dsl
@@ -42,13 +43,15 @@ module Tap
           raise Error, "#{tool.name}: mixed OR/AND in license is not supported" if ops.uniq.size > 1
 
           ids = parts.values_at(*(0...parts.size).step(2))
-          key = (ops.first == "OR") ? "any_of" : "all_of"
-          "#{key}: [#{ids.map { |id| q id }.join(", ")}]"
+          any = ops.first == "OR"
+          key = any ? "any_of" : "all_of"
+          quoted = ids.map { |id| q id }.join(", ")
+          "#{key}: [#{quoted}]"
         end
 
         def test_command
-          args = tool.test.join(" ")
-          %Q("\#{bin}/#{tool.binaries.first}#{" #{args}" unless args.empty?}")
+          words = ["\#{bin}/#{tool.binaries.first}", *tool.test]
+          %Q("#{words.join(" ")}")
         end
       end
     end

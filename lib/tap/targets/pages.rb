@@ -48,12 +48,13 @@ module Tap
 
       def feed(served)
         entries = served.sort_by { |_, r| r.published.to_s }.reverse.map do |tool, release|
+          updated = release.published || EPOCH
           <<~XML
             <entry>
               <title>#{h tool.name} #{h release.version}</title>
               <id>#{URL}/#{h tool.name}/#{h release.version}</id>
               <link href="#{h tool.homepage}/releases/tag/#{h release.tag}"/>
-              <updated>#{h(release.published || EPOCH)}</updated>
+              <updated>#{h updated}</updated>
               <summary>#{h tool.desc}</summary>
             </entry>
           XML

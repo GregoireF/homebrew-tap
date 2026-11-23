@@ -26,7 +26,8 @@ module Tap
 
       def table(catalog)
         rows = catalog.served.map do |tool, release|
-          badge = (release.verified == "attestation") ? "SLSA provenance" : "SHA-256"
+          attested = release.verified == "attestation"
+          badge = attested ? "SLSA provenance" : "SHA-256"
           "| [`#{tool.name}`](#{tool.homepage}) | #{tool.desc} | " \
             "[#{release.version}](#{tool.homepage}/releases/tag/#{release.tag}) | " \
             "`brew install gregoiref/tap/#{tool.formula_name}` | `scoop install gregoiref/#{tool.name}` | #{badge} |"

@@ -26,7 +26,10 @@ module Tap
       end
 
       # A single-quoted shell word.
-      def sh(text) = "'#{text.to_s.gsub("'", "'\\\\''")}'"
+      def sh(text)
+        escaped = text.to_s.gsub("'", "'\\\\''")
+        "'#{escaped}'"
+      end
     end
   end
 end

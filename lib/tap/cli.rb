@@ -56,7 +56,8 @@ module Tap
 
     def usage(name)
       @ws.err.puts USAGE
-      (name.nil? || %w[-h --help help].include?(name)) ? 0 : 2
+      asked = name.nil? || %w[-h --help help].include?(name)
+      asked ? 0 : 2
     end
   end
 end

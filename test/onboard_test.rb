@@ -14,7 +14,8 @@ class OnboardTest < Minitest::Test
   def goreleaser_files(version = "2.1.0")
     names = Tap::PLATFORMS.map do |p|
       os, arch = p.split("_")
-      "widget_#{version}_#{os}_#{arch}.#{(os == "windows") ? "zip" : "tar.gz"}"
+      ext = p.start_with?("windows") ? "zip" : "tar.gz"
+      "widget_#{version}_#{os}_#{arch}.#{ext}"
     end
     files = names.to_h { |n| [n, "bytes #{n}"] }
     files["widget_#{version}_linux_amd64.tar.gz.sbom.json"] = "{}"

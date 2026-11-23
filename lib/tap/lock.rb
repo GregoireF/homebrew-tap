@@ -10,7 +10,8 @@ module Tap
   # published: the release's publication time (ISO 8601), nil if unknown.
   Release = Data.define(:tag, :version, :verified, :assets, :published) do
     define_method(:url) do |tool, platform|
-      "https://github.com/#{tool.repo}/releases/download/#{tag}/#{assets.fetch(platform).fetch("name")}"
+      name = assets.fetch(platform).fetch("name")
+      "https://github.com/#{tool.repo}/releases/download/#{tag}/#{name}"
     end
 
     define_method(:sha256) do |platform|

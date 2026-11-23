@@ -44,7 +44,8 @@ module Tap
       end
 
       def badge(label, message, color)
-        "#{JSON.generate("schemaVersion" => 1, "label" => label, "message" => message, "color" => color)}\n"
+        json = JSON.generate("schemaVersion" => 1, "label" => label, "message" => message, "color" => color)
+        "#{json}\n"
       end
 
       # The Markdown a tool's README pastes, one image per badge.

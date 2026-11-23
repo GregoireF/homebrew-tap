@@ -77,7 +77,10 @@ class CLITest < Minitest::Test
   YAML
 
   def demo_release
-    files = Tap::PLATFORMS.to_h { |p| ["demo_#{p}#{p.start_with?("windows") ? ".zip" : ".tar.gz"}", p] }
+    files = Tap::PLATFORMS.to_h do |p|
+      ext = p.start_with?("windows") ? ".zip" : ".tar.gz"
+      ["demo_#{p}#{ext}", p]
+    end
     sums = files.map { |name, bytes| "#{Digest::SHA256.hexdigest(bytes)}  #{name}\n" }.join
     { tag: "v0.3.0", files: files.merge("checksums.txt" => sums) }
   end
@@ -113,7 +116,8 @@ class CLITest < Minitest::Test
   def onboarding_github
     files = Tap::PLATFORMS.to_h do |p|
       os, arch = p.split("_")
-      ["gadget_#{os}_#{arch}.#{(os == "windows") ? "zip" : "tar.gz"}", p]
+      ext = p.start_with?("windows") ? "zip" : "tar.gz"
+      ["gadget_#{os}_#{arch}.#{ext}", p]
     end
     sums = files.map { |n, b| "#{Digest::SHA256.hexdigest(b)}  #{n}\n" }.join
     FakeGitHub.new({ "GregoireF/gadget" => { tag: "v1.0.0", files: files.merge("checksums.txt" => sums) },

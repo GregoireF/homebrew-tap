@@ -16,10 +16,14 @@ module Tap
           else
             list = updates.map { |u| "#{u.tool} #{u.to}" }.join(", ")
             candidate = "⬆️ build(tools): #{list}"
-            (candidate.length <= HEADER_MAX) ? candidate : "⬆️ build(tools): #{updates.size} updates"
+            fits = candidate.length <= HEADER_MAX
+            fits ? candidate : "⬆️ build(tools): #{updates.size} updates"
           end
-        body = updates.map { |u| "- #{u.tool}: #{u.from || "new"} -> #{u.to}" }.join("\n")
-        "#{header}\n\n#{body}\n"
+        lines = updates.map do |u|
+          from = u.from || "new"
+          "- #{u.tool}: #{from} -> #{u.to}\n"
+        end
+        "#{header}\n\n#{lines.join}"
       end
 
       def self.single_header(update)

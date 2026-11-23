@@ -19,7 +19,8 @@ if ENV["COVERAGE"] != "0"
     lib = File.expand_path("../lib", __dir__)
     files = Coverage.result.select { |path, _| path.start_with?(lib) }
     lines = files.values.flat_map { |r| r[:lines].compact }
-    percent = lines.empty? ? 0.0 : 100.0 * lines.count(&:positive?) / lines.size
+    percent = 0.0
+    percent = 100.0 * lines.count(&:positive?) / lines.size unless lines.empty?
     files.each do |path, r|
       missed = r[:lines].each_with_index.select { |hits, _| hits&.zero? }.map { |_, i| i + 1 }
       warn "  #{path.delete_prefix("#{lib}/")}: lines #{missed.join(", ")} not covered" unless missed.empty?

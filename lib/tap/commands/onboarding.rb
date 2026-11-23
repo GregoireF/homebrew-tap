@@ -15,7 +15,9 @@ module Tap
         name, entry = Onboard.new(github: ws.github, publisher: ws.publisher).entry(repo)
         raise Error, "a tool named #{name} is already in tools.yml" if tools.any? { |t| t.name == name }
 
-        File.binwrite(ws.path("tools.yml"), "#{ws.read("tools.yml").chomp}\n#{Onboard.yaml(name, entry)}")
+        current = ws.read("tools.yml").chomp
+        addition = Onboard.yaml(name, entry)
+        File.binwrite(ws.path("tools.yml"), "#{current}\n#{addition}")
         ws.err.puts "added #{name} (#{repo}) to tools.yml"
         0
       end

@@ -29,7 +29,7 @@ module Tap
     def self.report(findings)
       return "Everything the tap serves is healthy.\n" if findings.empty?
 
-      "#{findings.map { |f| "- #{f}" }.join("\n")}\n"
+      findings.map { |f| "- #{f}\n" }.join
     end
 
     def stale?(release)
@@ -49,7 +49,8 @@ module Tap
                     "once a fixed release is out"
       end
       if stale?(release)
-        findings << "`#{tool.name}`: last release #{release.version} on #{release.published[0, 10]}, " \
+        date = release.published[0, 10]
+        findings << "`#{tool.name}`: last release #{release.version} on #{date}, " \
                     "more than #{STALE_DAYS} days ago"
       end
       if tool.verify == "attestation"

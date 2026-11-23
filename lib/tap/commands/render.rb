@@ -28,7 +28,8 @@ module Tap
         stray = ws.existing(Targets.repository) - files.keys
         drift.each { |rel| ws.err.puts "tap: #{rel} is out of date, run bin/tap render" }
         stray.each { |rel| ws.err.puts "tap: #{rel} is not generated from tools.yml, run bin/tap render" }
-        (drift.empty? && stray.empty?) ? 0 : 1
+        clean = drift.empty? && stray.empty?
+        clean ? 0 : 1
       end
     end
   end
