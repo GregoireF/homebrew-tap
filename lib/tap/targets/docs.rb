@@ -28,9 +28,7 @@ module Tap
       def tools_yml
         tool = schema("tools.schema.json").dig("$defs", "tool")
         required = tool.fetch("required")
-        rows = tool.fetch("properties").map do |key, spec|
-          "| `#{key}` | #{required.include?(key) ? "yes" : "no"} | #{type(spec)} | #{cell(spec["description"])} |"
-        end
+        rows = tool.fetch("properties").map { |key, spec| row(key, required, spec) }
         <<~MD
           #{HEADER.chomp}
           # `tools.yml` keys
@@ -54,9 +52,7 @@ module Tap
         defs = schema("api.schema.json").fetch("$defs")
         sections = %w[index summary tool archive].map do |name|
           spec = defs.fetch(name)
-          rows = spec.fetch("properties").map do |key, prop|
-            "| `#{key}` | #{spec.fetch("required").include?(key) ? "yes" : "no"} | #{type(prop)} | #{cell(prop["description"])} |"
-          end
+          rows = spec.fetch("properties").map { |key, prop| row(key, spec.fetch("required"), prop) }
           "## `#{name}`\n\n| Field | Required | Type | Meaning |\n| --- | --- | --- | --- |\n#{rows.join("\n")}\n"
         end
         <<~MD
@@ -92,6 +88,10 @@ module Tap
         MD
       end
 
+      def row(key, required, spec)
+        "| `#{key}` | #{required.include?(key) ? "yes" : "no"} | #{type(spec)} | #{cell(spec["description"])} |"
+      end
+
       def type(spec)
         ref = spec["$ref"]&.split("/")&.last
         return "list of strings" if ref == "strings"
@@ -101,7 +101,7 @@ module Tap
         Array(spec["type"]).join(" or ")
       end
 
-      def cell(text) = text.to_s.gsub("|", "\\|").gsub("<", "&lt;").gsub(">", "&gt;").gsub("\n", " ")
+      def cell(text) = text.to_s.gsub("|", "\\|").gsub("<", "&lt;").gsub(">", "&gt;").tr("\n", " ")
     end
   end
 end

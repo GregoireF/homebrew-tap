@@ -13,9 +13,13 @@ aqua, an API, badges, an installer and reference pages were next.
 Every output is a module under `lib/tap/targets/` with the same interface:
 
 ```ruby
-module Tap::Targets::Example
-  GLOBS = %w[example/*.json].freeze   # paths it owns
-  def self.files(catalog) = { "example/kiwa.json" => "…" }
+module Tap
+  module Targets
+    module Example
+      GLOBS = %w[example/*.json].freeze # paths it owns
+      def self.files(catalog) = { "example/kiwa.json" => "…" }
+    end
+  end
 end
 ```
 

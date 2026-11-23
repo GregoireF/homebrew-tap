@@ -19,7 +19,7 @@ class LinksTest < Minitest::Test
     broken = markdown_files.flat_map do |file|
       text = File.binread(file).force_encoding(Encoding::UTF_8).gsub(/^```.*?^```/m, "")
       text.scan(LINK).flatten.filter_map do |target|
-        next if target.match?(%r{\A(?:[a-z]+:|#|<)}) # URLs, anchors, placeholders
+        next if target.match?(/\A(?:[a-z]+:|#|<)/) # URLs, anchors, placeholders
 
         path = target.split("#", 2).first
         next if path.empty?
