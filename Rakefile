@@ -16,12 +16,13 @@ task :check do
 end
 
 # brew style and brew audit --strict on this checkout, in Docker (any OS):
-# once with the homebrew/brew image as it is, once after `brew update`,
+# once with the homebrew/brew image as it is, once on Homebrew's main branch,
 # because the two Homebrew versions disagree on some cops (AGENTS.md).
 BREW_CHECK = <<~SH
   set -u
   export HOMEBREW_NO_ANALYTICS=1 HOMEBREW_NO_ENV_HINTS=1
-  [ "$MODE" = latest ] && brew update -q >/dev/null 2>&1
+  # brew test-bot runs Homebrew's main branch, not its latest tag.
+  [ "$MODE" = latest ] && HOMEBREW_DEVELOPER=1 brew update -q >/dev/null 2>&1
   brew --version | head -n 1
   cp -r /src /tmp/tap && cd /tmp/tap && rm -rf .git && chmod -R go-w .
   git init -q && git add -A && git -c user.name=t -c user.email=t@t commit -qm t

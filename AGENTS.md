@@ -28,7 +28,9 @@ all generated from `tools.yml` and `tools.lock.json` by the Ruby generator in
   *private* method used once (`Homebrew/SingleUseMethod`) while older ones
   flag a directive that disables it as useless: helpers that are one named
   step are public instead. Check against both the Docker image as it is and
-  after `brew update`.
+  Homebrew's main branch, which `brew test-bot` runs (`rake brew` does
+  both). Main's `SimpleInterpolation`/`SimpleTernary` keep operators,
+  blocks and call chains out of `#{}` and ternaries: name a local first.
 - Files are read and written in binary mode (`File.binread`/`binwrite`):
   LF everywhere, on Windows too.
 - Every Ruby file starts with `# typed: strict` then
