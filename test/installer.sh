@@ -23,7 +23,8 @@ tools="$(sed -n 's/^# Tools: //p' "${script}" | tr ',' '\n' | awk '{print $1}')"
 first="$(printf '%s\n' "${tools}" | head -n 1)"
 
 musl=0
-if ldd --version 2>&1 | grep -qi musl; then musl=1; fi
+# musl's ldd exits 1 on --version; under pipefail that sank the match.
+if { ldd --version 2>&1 || true; } | grep -qi musl; then musl=1; fi
 
 for tool in ${tools}
 do
